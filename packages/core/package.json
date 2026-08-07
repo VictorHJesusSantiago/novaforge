@@ -1,0 +1,16 @@
+{
+  "name": "@novaforge/core",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "The NovaForge ECS: entities, sparse-set storage, queries, scheduling, events and the fixed-step clock.",
+  "license": "MIT",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": ["src"],
+  "sideEffects": false,
+  "dependencies": {
+    "@novaforge/math": "0.1.0"
+  }
+}

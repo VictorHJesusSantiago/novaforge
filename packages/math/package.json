@@ -1,0 +1,13 @@
+{
+  "name": "@novaforge/math",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "2D math primitives for the NovaForge engine: vectors, matrices, rects, easing, seeded RNG.",
+  "license": "MIT",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": ["src"],
+  "sideEffects": false
+}
