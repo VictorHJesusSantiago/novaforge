@@ -1,0 +1,21 @@
+{
+  "name": "@novaforge/example-asteroids",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A complete small game built on the NovaForge runtime.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@novaforge/audio": "0.1.0",
+    "@novaforge/core": "0.1.0",
+    "@novaforge/input": "0.1.0",
+    "@novaforge/math": "0.1.0",
+    "@novaforge/physics": "0.1.0",
+    "@novaforge/renderer": "0.1.0",
+    "@novaforge/runtime": "0.1.0"
+  }
+}

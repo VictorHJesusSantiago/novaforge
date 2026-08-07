@@ -1,0 +1,17 @@
+{
+  "name": "@novaforge/animation",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Keyframe tracks over arbitrary component fields, a timeline player, and a state machine for NovaForge.",
+  "license": "MIT",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": ["src"],
+  "sideEffects": false,
+  "dependencies": {
+    "@novaforge/core": "0.1.0",
+    "@novaforge/math": "0.1.0"
+  }
+}
