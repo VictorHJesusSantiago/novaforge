@@ -1,0 +1,16 @@
+{
+  "name": "docs-site",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "NovaForge's documentation site: the SPEC, ARCHITECTURE, ADRs and ROADMAP rendered from the same markdown source in docs/, plus the two example apps embedded and actually running.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "marked": "^18.0.9",
+    "vite": "^6.0.7"
+  }
+}
