@@ -1,0 +1,169 @@
+:root {
+  color-scheme: light dark;
+  --bg: #0f1117;
+  --fg: #e6e6e6;
+  --muted: #9aa0ab;
+  --accent: #6ea8fe;
+  --border: #262a33;
+  --code-bg: #1a1d24;
+  font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+}
+
+.nf-docs__header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+  flex-wrap: wrap;
+}
+
+.nf-docs__brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.nf-docs__nav {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.nf-docs__nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.nf-docs__nav a.active,
+.nf-docs__nav a:hover {
+  color: var(--accent);
+}
+
+.nf-docs__main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+.nf-docs__main h1:first-child {
+  margin-top: 0;
+}
+
+.nf-docs__main pre {
+  background: var(--code-bg);
+  padding: 12px 16px;
+  overflow-x: auto;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.nf-docs__main code {
+  background: var(--code-bg);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.nf-docs__main pre code {
+  background: none;
+  padding: 0;
+}
+
+.nf-docs__main a {
+  color: var(--accent);
+}
+
+.nf-docs__main table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.nf-docs__main th,
+.nf-docs__main td {
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.nf-docs__home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.nf-docs__card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  text-decoration: none;
+  color: var(--fg);
+  display: block;
+}
+
+.nf-docs__card:hover {
+  border-color: var(--accent);
+}
+
+.nf-docs__card h3 {
+  margin: 0 0 6px;
+}
+
+.nf-docs__card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.nf-docs__play {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 16px;
+}
+
+.nf-docs__play iframe {
+  width: 100%;
+  height: 640px;
+  border: 0;
+  display: block;
+  background: #101014;
+}
+
+.nf-docs__play-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.nf-docs__play-tabs button {
+  background: var(--code-bg);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.nf-docs__play-tabs button.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}

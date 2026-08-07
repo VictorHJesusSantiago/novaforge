@@ -1,0 +1,330 @@
+/*
+ * Minimal, dark, functional. This is editor chrome, not the product — it should disappear
+ * behind whatever the viewport is showing, not compete with it.
+ */
+
+.nf-inspector,
+.nf-scene-tree,
+.nf-asset-panel {
+  font: 13px/1.4 ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+  color: #d8d8e2;
+  background: #16161f;
+}
+
+.nf-button {
+  padding: 0.3em 0.7em;
+  border: 1px solid #33334a;
+  border-radius: 4px;
+  background: #22222f;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.nf-button:hover {
+  background: #2c2c3d;
+}
+
+.nf-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.nf-button--small {
+  padding: 0.1em 0.4em;
+  font-size: 0.85em;
+}
+
+.nf-button--danger {
+  border-color: #6b2a3a;
+  color: #ff8fa3;
+}
+
+/* ---------------------------------------------------------------- scene tree */
+
+.nf-scene-tree__toolbar {
+  padding: 0.5em;
+  border-bottom: 1px solid #26263a;
+}
+
+.nf-scene-tree__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.nf-scene-tree__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5em;
+  padding: 0.35em 0.7em;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+}
+
+.nf-scene-tree__item:hover {
+  background: #1c1c29;
+}
+
+.nf-scene-tree__item--selected {
+  background: #202a3a;
+  border-left-color: #4cc9f0;
+}
+
+.nf-scene-tree__item[draggable='true'] {
+  cursor: grab;
+}
+
+.nf-scene-tree__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nf-scene-tree__node {
+  list-style: none;
+}
+
+.nf-scene-tree__children {
+  list-style: none;
+  margin: 0;
+  padding-left: 1.1em;
+  border-left: 1px solid #26263a;
+}
+
+/* ------------------------------------------------------------------ inspector */
+
+.nf-inspector {
+  padding: 0.5em;
+  overflow-y: auto;
+}
+
+.nf-inspector__empty {
+  color: #6a6a80;
+  font-style: italic;
+}
+
+.nf-inspector__entity-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid #26263a;
+}
+
+.nf-inspector__entity-id {
+  font-weight: 600;
+}
+
+.nf-inspector__component {
+  margin: 0 0 0.75em;
+  padding: 0.5em 0.7em;
+  border: 1px solid #26263a;
+  border-radius: 6px;
+}
+
+.nf-inspector__component legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0 0.3em;
+  font-weight: 600;
+  color: #9d8df1;
+}
+
+.nf-inspector__field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5em;
+  margin: 0.3em 0;
+}
+
+.nf-inspector__field-label {
+  color: #a0a0b8;
+}
+
+.nf-inspector__field input,
+.nf-inspector__field select {
+  width: 9em;
+  background: #0f0f16;
+  border: 1px solid #33334a;
+  border-radius: 4px;
+  color: inherit;
+  font: inherit;
+  padding: 0.2em 0.4em;
+}
+
+.nf-inspector__vec2 {
+  display: flex;
+  gap: 0.3em;
+}
+
+.nf-inspector__vec2 input {
+  width: 4.2em;
+}
+
+.nf-inspector__tag-note,
+.nf-inspector__readonly {
+  color: #6a6a80;
+  font-style: italic;
+}
+
+.nf-inspector__opaque {
+  margin: 0;
+  max-height: 8em;
+  overflow: auto;
+  font-size: 0.85em;
+  color: #8a8aa0;
+}
+
+.nf-inspector__add-row {
+  display: flex;
+  gap: 0.4em;
+  margin-top: 0.5em;
+}
+
+/* ---------------------------------------------------------------- asset panel */
+
+.nf-asset-panel__dropzone {
+  padding: 1.2em;
+  margin: 0.5em;
+  border: 2px dashed #33334a;
+  border-radius: 8px;
+  text-align: center;
+  color: #6a6a80;
+}
+
+.nf-asset-panel__list {
+  list-style: none;
+  margin: 0;
+  padding: 0.5em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6em;
+}
+
+.nf-asset-panel__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2em;
+  width: 4.5em;
+  font-size: 0.8em;
+  color: #a0a0b8;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.nf-asset-panel__thumb {
+  width: 3.5em;
+  height: 3.5em;
+  object-fit: cover;
+  border: 1px solid #33334a;
+  border-radius: 4px;
+  background: #0f0f16;
+}
+
+.nf-asset-panel__sound-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4em;
+  color: #9d8df1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.nf-asset-panel__sound-icon:hover {
+  background: #1c1c29;
+}
+
+/* --------------------------------------------------------------------- timeline */
+
+.nf-timeline {
+  padding: 0.5em;
+}
+
+.nf-timeline__empty {
+  color: #6a6a80;
+  font-style: italic;
+}
+
+.nf-timeline__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 0.4em;
+}
+
+.nf-timeline__label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85em;
+  color: #a0a0b8;
+}
+
+.nf-timeline__scrubber {
+  width: 100%;
+  margin-bottom: 0.6em;
+  accent-color: #4cc9f0;
+}
+
+.nf-timeline__tracks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+}
+
+.nf-timeline__track {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.nf-timeline__track-label {
+  width: 10em;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85em;
+  color: #a0a0b8;
+}
+
+.nf-timeline__strip {
+  position: relative;
+  flex: 1;
+  height: 1.4em;
+  background: #0f0f16;
+  border: 1px solid #26263a;
+  border-radius: 3px;
+}
+
+.nf-timeline__keyframe {
+  position: absolute;
+  top: 50%;
+  width: 0.7em;
+  height: 0.7em;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: #9d8df1;
+  border: 1px solid #16161f;
+  border-radius: 1px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.nf-timeline__keyframe:hover {
+  background: #4cc9f0;
+}
+
+/* --------------------------------------------------------------------- overlay */
+
+.nf-viewport-overlay {
+  position: absolute;
+  inset: 0;
+  cursor: crosshair;
+}
