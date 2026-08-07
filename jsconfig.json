@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@novaforge/math": ["packages/math/src/index.js"],
+      "@novaforge/core": ["packages/core/src/index.js"],
+      "@novaforge/renderer": ["packages/renderer/src/index.js"],
+      "@novaforge/physics": ["packages/physics/src/index.js"],
+      "@novaforge/input": ["packages/input/src/index.js"],
+      "@novaforge/audio": ["packages/audio/src/index.js"],
+      "@novaforge/runtime": ["packages/runtime/src/index.js"]
+    }
+  },
+  "include": ["packages/*/src/**/*.js", "examples/*/src/**/*.js", "docs-site/src/**/*.js"],
+  "exclude": ["node_modules", "**/dist", "**/__tests__"]
+}
