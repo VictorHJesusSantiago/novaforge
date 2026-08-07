@@ -11,3 +11,4 @@ Thumbs.db
 !.vscode/extensions.json
 *.tsbuildinfo
 benchmarks/results/
+benchmarks/browser-results.json
