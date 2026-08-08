@@ -1,0 +1,17 @@
+{
+  "name": "@novaforge/renderer",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Draw list, camera, and the Canvas2D backend for NovaForge.",
+  "license": "MIT",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": ["src"],
+  "sideEffects": false,
+  "dependencies": {
+    "@novaforge/core": "0.1.0",
+    "@novaforge/math": "0.1.0"
+  }
+}
