@@ -19,10 +19,10 @@
  */
 
 export const ENTITY_INDEX_BITS = 20;
-export const ENTITY_INDEX_MASK = (1 << ENTITY_INDEX_BITS) - 1; // 0xFFFFF
+export const ENTITY_INDEX_MASK = (1 << ENTITY_INDEX_BITS) - 1;
 
 export const ENTITY_GENERATION_BITS = 11;
-export const ENTITY_GENERATION_MASK = (1 << ENTITY_GENERATION_BITS) - 1; // 0x7FF
+export const ENTITY_GENERATION_MASK = (1 << ENTITY_GENERATION_BITS) - 1;
 
 /** Highest addressable entity index — 1,048,576 live entities. */
 export const MAX_ENTITIES = ENTITY_INDEX_MASK + 1;

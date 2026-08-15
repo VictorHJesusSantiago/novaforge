@@ -47,9 +47,6 @@ export function getParent(world, entity) {
  */
 export function isAncestorOf(world, candidateAncestor, entity) {
   let current = entity;
-  // Bounded by MAX_ENTITIES in the worst case, but a real hierarchy is never that deep; the
-  // guard exists purely so a bug that produced a cycle some other way fails as an infinite loop
-  // here would, minus the actual infinite loop.
   for (let steps = 0; steps < 1_000_000; steps += 1) {
     if (current === candidateAncestor) return true;
     const next = getParent(world, current);

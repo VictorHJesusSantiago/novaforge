@@ -96,14 +96,11 @@ export class EventBus {
    * @returns {void}
    */
   swap() {
-    // Reuse the outgoing read buffers as the new write buffers instead of allocating fresh
-    // arrays every frame.
     for (const queue of this._read.values()) queue.length = 0;
     const previousRead = this._read;
     this._read = this._write;
     this._write = previousRead;
 
-    // Channels that exist in write but not in read would otherwise be dropped on the swap.
     for (const channel of this._read.keys()) {
       if (!this._write.has(channel)) this._write.set(channel, []);
     }
