@@ -189,7 +189,6 @@ export class PostProcessChain {
   run(sceneTexture, sceneWidth, sceneHeight) {
     const gl = this._gl;
     if (this.passes.length === 0) {
-      // No effects configured: just blit the scene straight to the backbuffer.
       this._blit(sceneTexture, null, sceneWidth, sceneHeight);
       return;
     }
@@ -251,7 +250,7 @@ export class PostProcessChain {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.uniform1i(gl.getUniformLocation(this._blitProgram, 'uTexture'), 0);
-    gl.uniform1f(gl.getUniformLocation(this._blitProgram, 'uAmount'), 0); // amount 0 = untouched
+    gl.uniform1f(gl.getUniformLocation(this._blitProgram, 'uAmount'), 0);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     gl.bindVertexArray(null);
   }

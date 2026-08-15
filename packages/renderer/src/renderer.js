@@ -65,8 +65,6 @@ export class Renderer {
    * @returns {void}
    */
   dispose() {
-    // Backends with nothing to release inherit this no-op rather than being forced to
-    // implement an empty method.
   }
 
   /**

@@ -48,7 +48,6 @@ export function computePostProcessPlan(passCount) {
  * @returns {Float32Array}
  */
 export function fullscreenQuadVertices() {
-  // x, y, u, v
   return new Float32Array([
     -1, -1, 0, 0,
     1, -1, 1, 0,
