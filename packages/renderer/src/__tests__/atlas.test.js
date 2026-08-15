@@ -43,7 +43,6 @@ describe('TextureAtlas.fromJSON', () => {
     expect(atlas.frame('walk_1')?.x).toBe(16);
   });
 
-  // A malformed atlas file should fail loudly at load time, not silently produce zero frames.
   it('throws when the manifest has no frames object', () => {
     expect(() => TextureAtlas.fromJSON('hero', {})).toThrow(/frames/);
     expect(() => TextureAtlas.fromJSON('hero', null)).toThrow(/frames/);

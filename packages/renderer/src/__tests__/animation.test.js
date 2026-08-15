@@ -40,7 +40,6 @@ describe('defineClip', () => {
     expect(clip.loop).toBe(false);
   });
 
-  // An animation with nothing to show is always a mistake; fail at definition time.
   it('rejects an empty frame list', () => {
     expect(() => defineClip('empty', 'hero', [])).toThrow(RangeError);
   });
@@ -54,7 +53,6 @@ describe('play', () => {
     expect(animator.elapsed).toBe(0);
   });
 
-  // Called every frame while a direction is held; must not restart the animation each time.
   it('is a no-op when the same clip is already playing', () => {
     const animator = Animator.factory();
     const clip = defineClip('walk', 'hero', ['0_0', '0_1', '0_2'], { fps: 10 });
@@ -117,7 +115,7 @@ describe('animationSystem', () => {
     const clip = defineClip('walk', 'hero', ['0_0', '0_1', '0_2', '0_3'], { fps: 10 });
     const entity = spawnAnimated(clip);
 
-    animationSystem(world, 0.1); // exactly one frame at 10fps
+    animationSystem(world, 0.1);
 
     expect(world.get(entity, Animator)?.frameIndex).toBe(1);
   });
@@ -137,7 +135,7 @@ describe('animationSystem', () => {
     const clip = defineClip('walk', 'hero', ['0_0', '0_1'], { fps: 10, loop: true });
     const entity = spawnAnimated(clip);
 
-    animationSystem(world, 0.25); // two and a half frames
+    animationSystem(world, 0.25);
 
     expect(world.get(entity, Animator)?.frameIndex).toBe(0);
   });
@@ -181,18 +179,16 @@ describe('animationSystem', () => {
     const animator = world.get(entity, Animator);
     if (animator) animator.speed = 2;
 
-    animationSystem(world, 0.1); // 0.1 * 2 = 0.2s = 2 frames at 10fps
+    animationSystem(world, 0.1);
 
     expect(animator?.frameIndex).toBe(2);
   });
 
-  // A stalled tab or an editor step can produce a very large dt; the animation must catch up
-  // to the correct frame rather than staying one frame behind forever.
   it('catches up correctly after a very large dt', () => {
     const clip = defineClip('walk', 'hero', ['0_0', '0_1', '0_2', '0_3'], { fps: 10, loop: true });
     const entity = spawnAnimated(clip);
 
-    animationSystem(world, 1.0); // 10 frames at 10fps; 10 mod 4 = 2
+    animationSystem(world, 1.0);
 
     expect(world.get(entity, Animator)?.frameIndex).toBe(2);
   });

@@ -43,9 +43,7 @@ describe('packRects', () => {
       { id: 'next-row', width: 90, height: 5 },
     ], { maxWidth: 100, padding: 0 });
 
-    // 'next-row' cannot fit beside the first two (10+10=20 used, 90 needed, 100 available —
-    // wait it actually could fit at x=20..110 which overflows 100, so it wraps).
-    expect(result.placements.get('next-row')?.y).toBe(40); // the shelf height, from 'tall'
+    expect(result.placements.get('next-row')?.y).toBe(40);
   });
 
   it('the atlas width is always exactly maxWidth when there is at least one rect', () => {
@@ -59,7 +57,7 @@ describe('packRects', () => {
       { id: 'b', width: 10, height: 10 },
     ], { maxWidth: 100, padding: 2 });
 
-    expect(result.placements.get('b')?.x).toBe(12); // 10 + 2 padding
+    expect(result.placements.get('b')?.x).toBe(12);
   });
 
   it('never lets padding leak into a rect\'s own reported size', () => {
@@ -83,7 +81,6 @@ describe('packRects', () => {
     }
   });
 
-  // The property that makes the packing usable at all: nothing overlaps.
   it('never overlaps two placements', () => {
     const rects = Array.from({ length: 40 }, (_, i) => ({
       id: `r${i}`,
