@@ -26,7 +26,7 @@ beforeEach(async () => {
   await game.scenes.change('play');
 
   now = 0;
-  game.frame(now); // prime the clock
+  game.frame(now);
 });
 
 afterEach(async () => {
@@ -103,8 +103,6 @@ describe('paddle control', () => {
     expect(paddle[1].position.x).toBeLessThan(startX);
   });
 
-  // A paddle that slides behind the wall is the most obvious possible bug, and the clamp is
-  // also what keeps its reported velocity honest.
   it('stays inside the walls when held against them', () => {
     game.input.pushKeyDown('ArrowLeft');
     advance(300);
@@ -129,7 +127,7 @@ describe('launching', () => {
     tap('Space');
     const velocity = ballBody().velocity;
     expect(velocity.length()).toBeCloseTo(BALL.speed, 0);
-    expect(velocity.y).toBeLessThan(0); // up, in screen space
+    expect(velocity.y).toBeLessThan(0);
   });
 
   it('detaches the ball so it stops tracking the paddle', () => {
@@ -147,9 +145,6 @@ describe('launching', () => {
 });
 
 describe('ball physics', () => {
-  // Checked every frame rather than once at the end, because an unattended ball eventually
-  // falls past the paddle and is reattached with zero velocity — which is correct, and would
-  // make a single end-of-run assertion meaningless.
   it('holds its nominal speed on every frame it is in play', () => {
     tap('Space');
 
@@ -165,8 +160,6 @@ describe('ball physics', () => {
     expect(framesInPlay).toBeGreaterThan(60);
   });
 
-  // The bug this guards against is a ball that tunnels through a wall at high speed, or one
-  // that the solver pushes out of the playfield entirely.
   it('never leaves the playfield through a wall', () => {
     tap('Space');
 
@@ -179,8 +172,6 @@ describe('ball physics', () => {
     }
   });
 
-  // A near-horizontal ball ping-pongs between the side walls forever with nothing the player
-  // can do about it.
   it('refuses to settle into a near-horizontal path', () => {
     tap('Space');
     const body = ballBody();
@@ -234,7 +225,6 @@ describe('bricks', () => {
     }
 
     expect(destroyedAt).toBeGreaterThanOrEqual(0);
-    // Every row is worth at least 10 points, and no single hit is worth more than the top row.
     expect(session.score).toBeGreaterThanOrEqual(Math.min(...BRICKS.points));
     expect(session.score).toBeLessThanOrEqual(Math.max(...BRICKS.points) * 2);
   });
@@ -245,7 +235,6 @@ describe('losing a life', () => {
     const session = game.world.getResource(SESSION);
     tap('Space');
 
-    // Aim it straight down past the paddle.
     ballTransform().position.set(60, PLAYFIELD.height - 120);
     ballBody().velocity.set(0, BALL.speed);
 
@@ -315,7 +304,7 @@ describe('pausing', () => {
     const bricks = game.world.query([Brick]).count();
 
     tap('Escape');
-    await Promise.resolve(); // the push is async
+    await Promise.resolve();
 
     expect(game.scenes.depth).toBe(2);
     expect(game.scenes.active?.name).toBe('pause');
@@ -328,7 +317,7 @@ describe('pausing', () => {
 
     tap('Escape');
     await Promise.resolve();
-    advance(2); // let the pause scene's onEnter take effect
+    advance(2);
 
     const before = ballTransform().position.clone();
     advance(60);
@@ -354,8 +343,6 @@ describe('pausing', () => {
 });
 
 describe('draw output', () => {
-  // The renderer is absent headlessly, but the draw list is not — so what would have been
-  // drawn is fully assertable.
   it('emits a command per visible entity, sorted into draw order', () => {
     advance(1);
 

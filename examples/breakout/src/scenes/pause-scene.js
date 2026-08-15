@@ -83,8 +83,6 @@ export class PauseScene extends Scene {
   }
 
   onExit() {
-    // Restoring the time scale here rather than in the play scene's `onResume` keeps the pause
-    // behaviour entirely inside the scene that caused it.
     if (this._game !== undefined) this._game.clock.timeScale = 1;
   }
 }
