@@ -217,8 +217,6 @@ export class AABB {
     let tMin = 0;
     let tMax = maxDistance;
 
-    // x slab. A zero direction component means the ray is parallel to the slab: it either
-    // starts inside it (no constraint) or misses entirely.
     if (Math.abs(direction.x) < 1e-9) {
       if (origin.x < this.minX || origin.x > this.maxX) return null;
     } else {
@@ -231,7 +229,6 @@ export class AABB {
       if (tMin > tMax) return null;
     }
 
-    // y slab
     if (Math.abs(direction.y) < 1e-9) {
       if (origin.y < this.minY || origin.y > this.maxY) return null;
     } else {

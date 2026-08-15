@@ -201,7 +201,6 @@ export class Mat3 {
     const m = this.m;
     const scaleX = Math.hypot(m[0], m[1]);
     const scaleY = Math.hypot(m[3], m[4]);
-    // A negative determinant means one axis is mirrored; attribute it to y by convention.
     const sign = this.determinant() < 0 ? -1 : 1;
     return {
       x: m[6],

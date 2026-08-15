@@ -143,7 +143,6 @@ export function smoothDamp(current, target, state, smoothTime, dt, maxSpeed = In
   const time = Math.max(0.0001, smoothTime);
   const omega = 2 / time;
   const x = omega * dt;
-  // Padé approximation of exp(-x); cheaper than Math.exp and accurate over the range we use.
   const exp = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
 
   let change = current - target;
@@ -155,7 +154,6 @@ export function smoothDamp(current, target, state, smoothTime, dt, maxSpeed = In
   state.velocity = (state.velocity - omega * temp) * exp;
   let output = goal + (change + temp) * exp;
 
-  // Prevent overshooting past the target.
   if (target - current > 0 === output > target) {
     output = target;
     state.velocity = (output - target) / dt;
