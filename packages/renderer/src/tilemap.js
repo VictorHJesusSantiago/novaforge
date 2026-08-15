@@ -152,9 +152,6 @@ export function tilemapRenderSystem(world) {
 
     const origin = transform.position;
 
-    // Without a camera (headless, or a fixed top-down view with none installed) fall back to
-    // the whole grid — degraded, not broken, matching Invariant A1's spirit for missing
-    // context rather than crashing.
     const bounds =
       camera !== undefined
         ? camera.visibleBounds()

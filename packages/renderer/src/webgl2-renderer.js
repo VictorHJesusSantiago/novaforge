@@ -134,15 +134,15 @@ export class WebGL2Renderer extends Renderer {
 
     gl.bindVertexArray(this._vao);
     gl.bindBuffer(gl.ARRAY_BUFFER, this._vbo);
-    const stride = ATTRIBUTE_STRIDE * 4; // 4 bytes per float
+    const stride = ATTRIBUTE_STRIDE * 4;
     gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, stride, 0); // position
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, stride, 0);
     gl.enableVertexAttribArray(1);
-    gl.vertexAttribPointer(1, 2, gl.FLOAT, false, stride, 2 * 4); // uv
+    gl.vertexAttribPointer(1, 2, gl.FLOAT, false, stride, 2 * 4);
     gl.enableVertexAttribArray(2);
-    gl.vertexAttribPointer(2, 4, gl.FLOAT, false, stride, 4 * 4); // color
+    gl.vertexAttribPointer(2, 4, gl.FLOAT, false, stride, 4 * 4);
     gl.enableVertexAttribArray(3);
-    gl.vertexAttribPointer(3, 1, gl.FLOAT, false, stride, 8 * 4); // shapeMode
+    gl.vertexAttribPointer(3, 1, gl.FLOAT, false, stride, 8 * 4);
     gl.bindVertexArray(null);
 
     /** @type {WebGLUniformLocation | null} @private */
@@ -216,8 +216,6 @@ export class WebGL2Renderer extends Renderer {
     const gl = this.gl;
     this.drawCalls = 0;
 
-    // Render into the off-screen scene target when post-processing is active, so the chain has
-    // an untouched frame to read from; otherwise draw straight to the backbuffer as before.
     gl.bindFramebuffer(gl.FRAMEBUFFER, this._sceneTarget?.framebuffer ?? null);
 
     const { r, g, b } = channels(this.backgroundColor);
@@ -308,9 +306,6 @@ export class WebGL2Renderer extends Renderer {
   /** @returns {void} */
   endFrame() {
     if (this._postProcess === null || this._sceneTarget === null) return;
-    // Runs the configured effect chain, reading the just-rendered scene texture and writing the
-    // result to the backbuffer — the one step that has to happen after `submit()`, since it's
-    // the scene texture's contents it depends on.
     this._postProcess.run(this._sceneTarget.texture, this.canvas.width, this.canvas.height);
   }
 
@@ -321,7 +316,7 @@ export class WebGL2Renderer extends Renderer {
    * @private
    */
   _resolveTexture(textureId, textureName) {
-    if (textureId === 0) return undefined; // untextured command; the white pixel is used
+    if (textureId === 0) return undefined;
 
     const cached = this._gpuTextures.get(textureId);
     if (cached !== undefined) return cached;
@@ -381,8 +376,6 @@ function createProgram(gl, vertexSource, fragmentSource) {
   gl.attachShader(program, fragmentShader);
   gl.linkProgram(program);
 
-  // Shaders are flagged for deletion but stay alive until the program using them is deleted —
-  // this just means the caller does not have to track and delete them separately.
   gl.deleteShader(vertexShader);
   gl.deleteShader(fragmentShader);
 

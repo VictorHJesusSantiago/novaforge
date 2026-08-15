@@ -43,8 +43,6 @@ export function syncPreviousTransform(world) {
  * @returns {{ x: number, y: number, rotation: number }}
  */
 function interpolate(transform, alpha) {
-  // Angles are interpolated through the shortest arc, so a body spinning past PI does not
-  // snap backwards through a full turn.
   const delta = wrapAngle(transform.rotation - transform.previousRotation);
   return {
     x: lerp(transform.previousPosition.x, transform.position.x, alpha),
@@ -122,8 +120,6 @@ export function shapeRenderSystem(world, alpha) {
     drawList.circle({
       x: at.x,
       y: at.y,
-      // A circle has one radius, so a non-uniform scale cannot be represented. Taking the
-      // larger axis keeps it conservative for culling; an ellipse would need its own command.
       radius: shape.radius * Math.max(transform.scale.x, transform.scale.y),
       tint: shape.color,
       alpha: shape.alpha,

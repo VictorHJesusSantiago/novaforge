@@ -75,8 +75,6 @@ function pushQuad(out, topLeft, topRight, bottomRight, bottomLeft, uv, color, sh
   /** @param {{x:number,y:number}} p @param {number} u @param {number} v */
   const vertex = (p, u, v) => out.push(p.x, p.y, u, v, r, g, b, a, shapeMode);
 
-  // Two triangles: (TL, TR, BR) and (TL, BR, BL). Winding does not matter here — the shader
-  // has no backface culling — but a consistent order keeps the buffer easy to reason about.
   vertex(topLeft, uv.u0, uv.v0);
   vertex(topRight, uv.u1, uv.v0);
   vertex(bottomRight, uv.u1, uv.v1);
@@ -163,9 +161,6 @@ export function appendCommandVertices(out, command, textureSize) {
     }
 
     case DrawKind.RECT: {
-      // Filled and outline rects are both rasterised as a filled quad here: true outline
-      // stroking would need a second geometry pass per rect, which is not worth it for a
-      // shape primitive whose whole purpose is placeholder and debug art.
       const corners = quadCorners(
         command.x,
         command.y,
@@ -191,7 +186,7 @@ export function appendCommandVertices(out, command, textureSize) {
       const dx = command.x2 - command.x;
       const dy = command.y2 - command.y;
       const length = Math.hypot(dx, dy);
-      if (length < 1e-6) return; // a zero-length line has no orientation to rasterise
+      if (length < 1e-6) return;
       const angle = Math.atan2(dy, dx);
       const midX = (command.x + command.x2) / 2;
       const midY = (command.y + command.y2) / 2;
@@ -203,8 +198,6 @@ export function appendCommandVertices(out, command, textureSize) {
     }
 
     default:
-      // TEXT, and anything added later that this batcher does not yet know how to rasterise.
-      // Silently skipped rather than thrown: one unrecognised command must not blank the frame.
       return;
   }
 }
@@ -240,7 +233,7 @@ export function groupByTexture(commands) {
   let current = null;
 
   for (const command of commands) {
-    if (command.kind === DrawKind.TEXT) continue; // rasterised by the overlay, not batched here
+    if (command.kind === DrawKind.TEXT) continue;
 
     if (current === null || current.textureId !== command.textureId) {
       current = { textureId: command.textureId, texture: command.texture, commands: [] };
