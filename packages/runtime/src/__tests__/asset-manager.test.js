@@ -99,8 +99,6 @@ describe('reference counting', () => {
     expect(assets.referencesTo('shared')).toBe(2);
   });
 
-  // Two levels sharing a tileset must not re-decode it on every transition, and neither may
-  // unload it out from under the other.
   it('does not unload while another reference remains', async () => {
     await assets.loadManifest(manifest);
     await assets.loadManifest(manifest);
@@ -154,7 +152,6 @@ describe('clear', () => {
 });
 
 describe('missing subsystems', () => {
-  // A headless game has no texture cache; loading a manifest must still track references.
   it('tracks references with no subsystems attached', async () => {
     const bare = new AssetManager();
     await bare.loadManifest({ textures: { a: 'a.png' } });

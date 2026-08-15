@@ -26,7 +26,7 @@ beforeEach(() => {
  */
 function runFrames(count, startMs = 0) {
   let now = startMs;
-  game.frame(now); // priming frame; the clock has no previous timestamp
+  game.frame(now);
   for (let i = 0; i < count; i += 1) {
     now += 1000 / 60;
     game.frame(now);
@@ -73,8 +73,6 @@ describe('the frame', () => {
       game.world.addSystem(/** @type {any} */ (stage), () => order.push(stage), { order: 500 });
     }
 
-    // The first frame establishes the clock baseline and legitimately produces no fixed step,
-    // so the stage order is asserted on the second frame.
     game.frame(0);
     order.length = 0;
     game.frame(1000 / 60);
@@ -90,7 +88,7 @@ describe('the frame', () => {
 
     runFrames(60);
 
-    expect(update).toBe(61); // 60 frames plus the priming one
+    expect(update).toBe(61);
     expect(fixed).toBeGreaterThanOrEqual(58);
     expect(fixed).toBeLessThanOrEqual(61);
   });
@@ -103,7 +101,7 @@ describe('the frame', () => {
     let now = 0;
     game.frame(now);
     for (let i = 0; i < 50; i += 1) {
-      now += 7.3; // deliberately not a multiple of the fixed step
+      now += 7.3;
       game.frame(now);
     }
 
@@ -125,7 +123,6 @@ describe('the frame', () => {
     expect(first).toBe(1);
   });
 
-  // Deferred destruction lands in postUpdate, after every system has run.
   it('flushes deferred destroys once per frame', () => {
     const doomed = game.world.spawn([Transform]);
     game.world.addSystem('update', (world) => world.destroy(doomed), { order: 500 });
@@ -138,13 +135,10 @@ describe('the frame', () => {
 });
 
 describe('events across frames', () => {
-  // Buffered events are readable the frame after they are emitted, whichever order the
-  // emitting and reading systems happen to run in.
   it('delivers an event to the next frame regardless of system order', () => {
     /** @type {number[]} */
     const received = [];
 
-    // The reader is registered first, so it runs *before* the emitter within a frame.
     game.world.addSystem('update', (world) => {
       for (const payload of world.events.read('ping')) received.push(payload);
     }, { order: 1 });
@@ -192,7 +186,6 @@ describe('physics through the full frame', () => {
     runFrames(240);
 
     const y = game.world.get(falling, Transform)?.position.y ?? 0;
-    // Ground top is at 280, the box half-height is 10, so it rests near 270.
     expect(y).toBeGreaterThan(255);
     expect(y).toBeLessThan(285);
   });
@@ -282,8 +275,6 @@ describe('scenes end to end', () => {
 });
 
 describe('resize', () => {
-  // A camera whose viewport disagrees with the canvas projects the mouse to the wrong world
-  // position, which shows up as clicks landing near but not on things.
   it('moves the camera viewport with the canvas', () => {
     game.resize(1024, 768);
     expect(game.camera.viewportWidth).toBe(1024);

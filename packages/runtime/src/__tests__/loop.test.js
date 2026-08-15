@@ -113,8 +113,6 @@ describe('start and stop', () => {
 });
 
 describe('resync on start', () => {
-  // Without this, resuming after a pause reports the entire idle period as one frame delta,
-  // and everything lurches forward.
   it('discards the time spent paused', () => {
     const scheduler = manualScheduler();
     const clock = new Clock();
@@ -133,7 +131,7 @@ describe('resync on start', () => {
     scheduler.flush(16);
     loop.stop();
 
-    loop.start(); // an hour later
+    loop.start();
     scheduler.flush(3600000);
 
     expect(deltas[deltas.length - 1]).toBe(0);
@@ -141,7 +139,6 @@ describe('resync on start', () => {
 });
 
 describe('manual stepping', () => {
-  // The editor's step button, and how the whole engine is driven headlessly in tests.
   it('runs exactly one frame without starting the loop', () => {
     let frames = 0;
     const loop = new Loop({ onFrame: () => (frames += 1), schedule: () => 1, cancel: () => {} });
