@@ -44,8 +44,6 @@ export class Loop {
   start() {
     if (this.running) return;
     this.running = true;
-    // Forget any timestamp from before the pause, so the first frame back does not report the
-    // entire idle period as one delta.
     this.clock.resync();
     this._queue();
   }

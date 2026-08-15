@@ -80,7 +80,6 @@ export class Scene {
    */
   onResume(_world) {}
 
-  // ------------------------------------------------------------ tracked setup
 
   /**
    * Bind the scene to a world. Called by the scene manager.

@@ -144,8 +144,6 @@ export class Game {
     const world = this.world;
     const { steps, alpha, delta } = this.clock.advance(now);
 
-    // Promote last frame's emitted events into this frame's readable ones, before any system
-    // runs. Doing it later would make whether a system sees an event depend on its order.
     world.events.swap();
 
     world.runStage('preUpdate', delta);
@@ -157,11 +155,9 @@ export class Game {
     world.runStage('update', delta);
     world.runStage('postUpdate', delta);
 
-    // Deferred destruction lands here, after every system has run — see ARCHITECTURE.md.
     world.flushDestroyed();
 
     this.drawList.clear();
-    // The render stage receives `alpha`, not a time delta.
     world.runStage('render', alpha);
 
     this.drawList.cull(this.camera.visibleBounds());
