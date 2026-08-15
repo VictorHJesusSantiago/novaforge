@@ -23,8 +23,6 @@ export function cameraFollowSystem(world, dt) {
   const player = world.query([Transform, Player]).first();
   if (player === null) return;
 
-  // The whole level fits inside the viewport vertically (see `play-scene.js`'s `camera.bounds`),
-  // so only x is ever worth following — a constant y keeps the horizon from bobbing on every jump.
   const target = { x: player[1].position.x, y: LEVEL_PIXEL_HEIGHT / 2 };
   camera.follow(target, dt);
 }

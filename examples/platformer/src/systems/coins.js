@@ -23,7 +23,7 @@ export function coinSystem(world) {
 
   for (const event of events) {
     if (!world.has(event.trigger, Coin) || !world.has(event.other, Player)) continue;
-    if (!world.isAlive(event.trigger)) continue; // already collected by an earlier event this frame
+    if (!world.isAlive(event.trigger)) continue;
 
     session.score += COIN_VALUE;
     world.destroy(event.trigger);

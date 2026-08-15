@@ -49,11 +49,6 @@ export class PlayScene extends Scene {
     this._game = game;
     this._bindControls(world);
 
-    // These three install systems directly on the world rather than through `this.addSystem`,
-    // so — unlike everything else in `_registerSystems` — they are not torn down automatically
-    // when the scene exits. Tracked here and removed in `onExit` for the same reason
-    // CLAUDE.md's testing notes call out: a leaked system from a previous scene keeps running
-    // and produces a game that behaves as though two levels are active at once.
     this._engineSystemHandles = [
       installStateMachineSystem(world),
       installTimelineSystem(world),
@@ -157,20 +152,9 @@ export class PlayScene extends Scene {
 
   /** @private */
   _registerSystems() {
-    // Ordering, the interesting part of this file — the same two engine-owned slots
-    // (`syncPreviousTransform` at -1000, `physicsStep` at 0) every scene in this repo works
-    // around.
-    //
-    //   -1000  syncPreviousTransform  (engine)
-    //     -21  groundCheck            reads last step's broadphase tree, before anything jumps
-    //     -20  playerControl          set velocity BEFORE the integrator runs
-    //       0  physicsStep            (engine)
     this.addSystem('fixedUpdate', groundCheckSystem, { order: -21, name: 'groundCheck' });
     this.addSystem('fixedUpdate', playerControlSystem, { order: -20, name: 'playerControl' });
 
-    // -7  animation parameters, before the state machine reads them at -6
-    // -6  stateMachine (engine, via installStateMachineSystem)
-    // -5  timeline     (engine, via installTimelineSystem)
     this.addSystem('update', playerAnimationParamsSystem, { order: -7, name: 'playerAnimationParams' });
 
     this.addSystem('update', cameraFollowSystem, { order: -50, name: 'cameraFollow' });
