@@ -63,8 +63,6 @@ export class Canvas2DRenderer extends Renderer {
   resize(width, height) {
     this.width = width;
     this.height = height;
-    // The backing store is in device pixels; the CSS size stays in layout pixels. Setting only
-    // one of the two is the reason canvases so often look blurry.
     this.canvas.width = Math.round(width * this.pixelRatio);
     this.canvas.height = Math.round(height * this.pixelRatio);
     this.canvas.style.width = `${width}px`;
@@ -91,7 +89,6 @@ export class Canvas2DRenderer extends Renderer {
     const ctx = this.ctx;
 
     ctx.save();
-    // Camera transform, applied once for the whole list rather than per command.
     ctx.translate(this.width / 2, this.height / 2);
     ctx.scale(camera.zoom, camera.zoom);
     ctx.rotate(-camera.rotation);
@@ -125,7 +122,6 @@ export class Canvas2DRenderer extends Renderer {
 
   /** @returns {void} */
   endFrame() {
-    // Canvas2D presents implicitly at the end of the task; nothing to flush.
   }
 
   /**

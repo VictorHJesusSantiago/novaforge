@@ -58,9 +58,6 @@ export function packRects(rects, options = {}) {
     seen.add(rect.id);
   }
 
-  // Tallest first: this is the one heuristic that actually matters for shelf packing — it is
-  // what keeps a shelf's wasted headroom (its height minus its shortest member) small on
-  // average, since every later, shorter rect on the same shelf wastes less of it.
   const sorted = [...rects].sort((a, b) => b.height - a.height);
 
   /** @type {Map<string, { x: number, y: number, width: number, height: number }>} */

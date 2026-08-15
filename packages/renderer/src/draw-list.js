@@ -49,7 +49,7 @@ export class DrawList {
     this._textureIds = new Map();
 
     /** @type {number} @private */
-    this._nextTextureId = 1; // 0 is reserved for "no texture"
+    this._nextTextureId = 1;
 
     /** Commands discarded by the camera cull this frame — shown in the debug overlay. */
     this.culled = 0;
@@ -163,7 +163,7 @@ export class DrawList {
 
     const source = options.source ?? null;
     if (source === null) {
-      c.sourceWidth = 0; // 0 means "the whole texture"
+      c.sourceWidth = 0;
       c.sourceHeight = 0;
       c.sourceX = 0;
       c.sourceY = 0;
@@ -427,7 +427,6 @@ function isVisible(c, bounds) {
         Math.max(c.y, c.y2) >= bounds.minY
       );
     case DrawKind.TEXT:
-      // Text extent is unknown without measuring, which would need a canvas context here.
       // A generous fixed margin is the pragmatic choice.
       halfW = 256;
       halfH = 64;
