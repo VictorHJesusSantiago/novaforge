@@ -123,9 +123,6 @@ describe('stateMachineSystem', () => {
   });
 
   it('takes only one transition per frame, even if the destination state would also fire', () => {
-    // idle -> walk -> run, all conditions simultaneously true. A naive implementation that
-    // re-evaluates the new state's own transitions in the same pass would land on 'run' in one
-    // frame; this system must stop after the first hop.
     const idleT = staticTimeline('idle', 0);
     const walkT = staticTimeline('walk', 1);
     const runT = staticTimeline('run', 2);

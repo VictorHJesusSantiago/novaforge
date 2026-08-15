@@ -88,8 +88,8 @@ describe('timelineSystem', () => {
 
   it('loops back past the end for a looping timeline', () => {
     const entity = spawnPlaying(ramp({ loop: true }));
-    timelineSystem(world, 15); // 1.5x the 10s duration
-    expect(world.get(entity, Widget)?.n).toBeCloseTo(50, 0); // wrapped to 5s in
+    timelineSystem(world, 15);
+    expect(world.get(entity, Widget)?.n).toBeCloseTo(50, 0);
   });
 
   it('clamps and marks finished for a non-looping timeline', () => {
@@ -112,7 +112,7 @@ describe('timelineSystem', () => {
     const entity = spawnPlaying(ramp());
     const player = world.get(entity, TimelinePlayer);
     if (player) player.speed = 2;
-    timelineSystem(world, 2.5); // 2.5 * 2 = 5s in
+    timelineSystem(world, 2.5);
     expect(world.get(entity, Widget)?.n).toBeCloseTo(50);
   });
 
@@ -122,7 +122,6 @@ describe('timelineSystem', () => {
     expect(() => timelineSystem(world, 1)).not.toThrow();
   });
 
-  // A duration of 0 (every keyframe at time 0) must not spin or divide by zero.
   it('handles a zero-duration timeline without spinning', () => {
     const track = defineTrack(Widget, 'n', [{ time: 0, value: 42 }]);
     const timeline = defineTimeline('instant', [track]);

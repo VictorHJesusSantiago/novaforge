@@ -22,9 +22,6 @@ beforeEach(() => {
 });
 
 describe('sampleTrack', () => {
-  // `Widget` is assigned by the outer `beforeEach`, which has not run yet while `describe`
-  // bodies are being collected — building `track` here directly (rather than inside a nested
-  // beforeEach) would read `Widget` before it exists.
   /** @type {any} */
   let track;
   beforeEach(() => {
@@ -74,7 +71,7 @@ describe('sampleTrack', () => {
 
   it('applies the outgoing keyframe\'s ease function', () => {
     const eased = defineTrack(Widget, 'n', [
-      { time: 0, value: 0, ease: () => 0.9 }, // pretend "ease" that always returns 0.9
+      { time: 0, value: 0, ease: () => 0.9 },
       { time: 10, value: 100 },
     ]);
     expect(sampleTrack(eased, 5).t).toBe(0.9);
@@ -105,7 +102,6 @@ describe('interpolateValue', () => {
   });
 
   it('blends a color field channel-wise, not as a raw numeric lerp', () => {
-    // Red to green at the halfway point should be a muddy olive, not a huge numeric jump.
     const result = interpolateValue(Widget, 'tint', 0xff0000, 0x00ff00, 0.5);
     expect((result >> 16) & 0xff).toBeCloseTo(128, -1);
     expect((result >> 8) & 0xff).toBeCloseTo(128, -1);
