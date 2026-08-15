@@ -74,8 +74,6 @@ export class AssetPanel {
 
     const previous = this._entries.get(id);
     this._entries.set(id, { url, kind });
-    // Revoke the *previous* URL, not this one — the asset just decoded still needs its own URL
-    // to remain valid for as long as the browser keeps referencing it as the source.
     if (previous !== undefined) URL.revokeObjectURL(previous.url);
 
     this.refresh();
@@ -150,7 +148,7 @@ export class AssetPanel {
    * @private
    */
   _buildSoundItem(id, entry) {
-    void entry; // the URL itself is not shown; the mixer already resolved it into an AudioBuffer
+    void entry;
 
     const item = document.createElement('li');
     item.className = 'nf-asset-panel__item nf-asset-panel__item--sound';

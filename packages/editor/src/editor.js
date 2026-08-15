@@ -102,9 +102,6 @@ export class Editor {
       this.timelinePanel?.refresh();
     });
 
-    // The editor starts in edit mode: entities exist and are visible, but nothing simulates
-    // until Play is pressed — a scene under construction should not be falling under gravity.
-    // Nothing to start or pause here; see the class doc on who drives the frame loop.
     this.sceneTree.refresh();
     this.assetPanel.refresh();
   }
@@ -119,9 +116,6 @@ export class Editor {
   frame(now) {
     this.game.frame(now);
     if (this.mode === 'edit') {
-      // Edit mode must still render live edits every frame, but must never accumulate enough
-      // delta to run a fixedUpdate step — resyncing after every call keeps `advance()` seeing
-      // no elapsed time (Clock's "first frame" branch) on every subsequent edit-mode frame.
       this.game.clock.resync();
     }
     this.viewportOverlay.render();
@@ -152,9 +146,6 @@ export class Editor {
       this._playSnapshot = null;
     }
 
-    // The clock's last-known timestamp is from mid-play; without this, the transition frame
-    // would see a real elapsed delta and could run a stray fixedUpdate step before edit mode's
-    // own per-frame resync takes over on the following call.
     this.game.clock.resync();
 
     this.selection.clear();

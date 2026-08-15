@@ -123,8 +123,6 @@ export function createEntityCommand(world) {
  * @returns {import('./command-stack.js').Command & { entity: () => number | null }}
  */
 export function deleteEntityCommand(world, entity) {
-  // Captured before anything is destroyed: getDescendants walks live Parent components, which
-  // stop existing the moment destroyImmediate reclaims their storage.
   const originalHandles = [entity, ...getDescendants(world, entity)];
   const snapshots = originalHandles.map((victim) => serializeEntity(world, victim));
 
@@ -134,9 +132,6 @@ export function deleteEntityCommand(world, entity) {
   return {
     label: 'Delete entity',
     do() {
-      // Reverse order: a child must not outlive the parent that (in a cascading delete) is
-      // about to reclaim shared bookkeeping — and it keeps `getChildren` well-defined for any
-      // system that happens to run mid-teardown, though none in this engine currently does.
       for (let i = current.length - 1; i >= 0; i -= 1) {
         if (world.isAlive(current[i])) world.destroyImmediate(current[i]);
       }
@@ -156,8 +151,6 @@ export function deleteEntityCommand(world, entity) {
         const parent = world.get(newHandle, Parent);
         if (parent === undefined) continue;
         const remapped = remap.get(parent.entity);
-        // A Parent value not found in the map pointed outside the deleted subtree — a live,
-        // unaffected entity whose handle never changed — and is left exactly as restored.
         if (remapped !== undefined) parent.entity = remapped;
       }
 
