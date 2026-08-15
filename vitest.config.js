@@ -21,8 +21,6 @@ export default defineConfig({
   test: {
     include: [
       'packages/*/src/**/__tests__/**/*.test.js',
-      // The example is tested too. It is the only place the whole engine is exercised the way
-      // a real game exercises it, which makes it the best regression test in the repository.
       'examples/*/src/**/__tests__/**/*.test.js',
     ],
     environment: 'node',

@@ -23,7 +23,6 @@ import { Rect } from '@novaforge/math';
 function bench(name, iterations, fn) {
   if (typeof globalThis.gc === 'function') globalThis.gc();
 
-  // One untimed pass lets V8 warm up the function before the measured run.
   fn();
 
   const started = performance.now();
@@ -39,7 +38,6 @@ function bench(name, iterations, fn) {
 
 console.log('NovaForge benchmarks\n' + '='.repeat(60));
 
-// ---------------------------------------------------------------- entity churn
 
 {
   const world = new World();
@@ -58,30 +56,25 @@ console.log('NovaForge benchmarks\n' + '='.repeat(60));
   });
 }
 
-// ------------------------------------------------------------------- queries
 
 {
   const world = new World();
   for (let i = 0; i < 20000; i += 1) world.spawn([Transform]);
-  // One rare entity in a sea of 20,000 — the case SPEC §5 claims stays cheap.
   world.spawn([Transform], [RigidBody]);
 
   console.log('\n-- queries (20,000 entities with Transform, 1 also with RigidBody) --');
 
   bench('iterate all 20,000 (wide query)', 200, () => {
     for (const _ of world.query([Transform])) {
-      /* the loop itself is what is timed */
     }
   });
 
   bench('iterate the 1 rare match (narrow query)', 2000, () => {
     for (const _ of world.query([Transform, RigidBody])) {
-      /* the loop itself is what is timed */
     }
   });
 }
 
-// ------------------------------------------------------------------- physics
 
 /**
  * @param {number} count
@@ -118,8 +111,6 @@ function buildPhysicsScene(count) {
   console.log('\n-- physics step (falling box grid onto a floor) --');
   for (const count of [100, 500, 2000]) {
     const { world, physics } = buildPhysicsScene(count);
-    // Run a few steps first so the grid is actually in contact — a resting-contact-heavy step
-    // is the realistic steady-state cost, not the first, contact-free step.
     for (let i = 0; i < 30; i += 1) physics.step(world, 1 / 60);
 
     bench(`step() with ${count} dynamic bodies`, 60, () => {

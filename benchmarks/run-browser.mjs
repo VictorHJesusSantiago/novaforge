@@ -32,7 +32,6 @@ async function waitForServer() {
       const response = await fetch(url);
       if (response.ok) return;
     } catch {
-      // not up yet
     }
     await delay(500);
   }
