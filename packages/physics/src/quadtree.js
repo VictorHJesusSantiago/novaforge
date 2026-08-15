@@ -86,7 +86,6 @@ export class Quadtree {
       );
     }
 
-    // Re-file existing items; anything straddling a boundary stays here.
     const staying = [];
     for (const item of this.items) {
       const child = this._childFor(item);
@@ -181,7 +180,6 @@ export class Quadtree {
    * @returns {Array<[QuadtreeItem, QuadtreeItem]>}
    */
   pairs(out = [], ancestors = []) {
-    // Pairs within this node.
     for (let i = 0; i < this.items.length; i += 1) {
       for (let j = i + 1; j < this.items.length; j += 1) {
         if (this.items[i].bounds.overlaps(this.items[j].bounds)) {
@@ -190,7 +188,6 @@ export class Quadtree {
       }
     }
 
-    // Pairs against everything held higher up, which no descendant can be separated from.
     for (const item of this.items) {
       for (const ancestor of ancestors) {
         if (item.bounds.overlaps(ancestor.bounds)) {

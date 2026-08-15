@@ -32,8 +32,6 @@ import { ShapeType, worldVertices, worldNormals } from './shapes.js';
  * @returns {Manifold | null} `null` when the shapes are not touching.
  */
 export function collide(shapeA, positionA, rotationA, shapeB, positionB, rotationB) {
-  // Written as nested checks rather than precomputed booleans so that each branch narrows the
-  // shape union, and `radius` / `vertices` are reachable without a cast.
   if (shapeA.type === ShapeType.CIRCLE) {
     if (shapeB.type === ShapeType.CIRCLE) {
       return collideCircles(positionA, shapeA.radius, positionB, shapeB.radius);
@@ -47,7 +45,6 @@ export function collide(shapeA, positionA, rotationA, shapeB, positionB, rotatio
   }
 
   if (shapeB.type === ShapeType.CIRCLE) {
-    // Solve it the other way round, then flip the normal so it still points A to B.
     const manifold = collideCirclePolygon(
       positionB,
       shapeB.radius,
@@ -85,9 +82,6 @@ export function collideCircles(centerA, radiusA, centerB, radiusB) {
 
   const distance = Math.sqrt(distanceSquared);
 
-  // Perfectly concentric circles have no meaningful normal. Picking +x arbitrarily is better
-  // than dividing by zero and poisoning the solver with NaN, and the resolver will separate
-  // them along that axis on the next step.
   if (distance < EPSILON) {
     return {
       normal: new Vec2(1, 0),
@@ -119,14 +113,13 @@ export function collideCircles(centerA, radiusA, centerB, radiusB) {
  * @returns {Manifold | null}
  */
 export function collideCirclePolygon(center, radius, vertices, normals) {
-  // Deepest face: the one whose plane the centre is furthest in front of.
   let separation = -Infinity;
   let faceIndex = 0;
 
   for (let i = 0; i < normals.length; i += 1) {
     const v = vertices[i];
     const s = normals[i].x * (center.x - v.x) + normals[i].y * (center.y - v.y);
-    if (s > radius) return null; // a separating axis exists
+    if (s > radius) return null;
     if (s > separation) {
       separation = s;
       faceIndex = i;
@@ -137,7 +130,6 @@ export function collideCirclePolygon(center, radius, vertices, normals) {
   const v2 = vertices[(faceIndex + 1) % vertices.length];
   const faceNormal = normals[faceIndex];
 
-  // Centre inside the polygon: push straight out along the nearest face.
   if (separation < EPSILON) {
     return {
       normal: faceNormal.negate(),
@@ -166,7 +158,6 @@ export function collideCirclePolygon(center, radius, vertices, normals) {
     return { normal, penetration: radius - distance, contacts: [v2.clone()] };
   }
 
-  // In front of the face itself.
   const normal = faceNormal.negate();
   return {
     normal,
@@ -191,14 +182,11 @@ export function collideCirclePolygon(center, radius, vertices, normals) {
  */
 export function collidePolygons(verticesA, normalsA, verticesB, normalsB) {
   const fromA = axisLeastPenetration(verticesA, normalsA, verticesB);
-  if (fromA.distance >= 0) return null; // separating axis found on A
+  if (fromA.distance >= 0) return null;
 
   const fromB = axisLeastPenetration(verticesB, normalsB, verticesA);
-  if (fromB.distance >= 0) return null; // separating axis found on B
+  if (fromB.distance >= 0) return null;
 
-  // The face with the *least* penetration is the reference face. A small bias toward A keeps
-  // the choice from flip-flopping between frames when the two are nearly equal, which would
-  // otherwise make a resting contact jitter.
   const preferA = fromA.distance > fromB.distance - 1e-5;
 
   const referenceVertices = preferA ? verticesA : verticesB;
@@ -211,14 +199,10 @@ export function collidePolygons(verticesA, normalsA, verticesB, normalsB) {
   const v1 = referenceVertices[referenceIndex];
   const v2 = referenceVertices[(referenceIndex + 1) % referenceVertices.length];
 
-  // The incident face is the one most anti-parallel to the reference normal — the face that is
-  // "facing into" the collision.
   const incident = findIncidentFace(referenceNormal, incidentVertices, incidentNormals);
 
   const edgeDirection = v2.sub(v1).normalizeSelf();
 
-  // Clip the incident face against the two side planes of the reference face, so that only the
-  // portion actually overlapping the reference face survives.
   let clipped = clipToPlane(edgeDirection.negate(), -edgeDirection.dot(v1), incident);
   if (clipped.length < 2) return null;
 
@@ -242,8 +226,6 @@ export function collidePolygons(verticesA, normalsA, verticesB, normalsB) {
   if (contacts.length === 0) return null;
 
   return {
-    // The reference normal points out of the reference polygon. If the reference was B, that
-    // is B toward A, so it has to be flipped to honour the A-to-B convention.
     normal: preferA ? referenceNormal.clone() : referenceNormal.negate(),
     penetration: penetrationSum / contacts.length,
     contacts,
@@ -266,7 +248,6 @@ function axisLeastPenetration(vertices, normals, otherVertices) {
 
   for (let i = 0; i < normals.length; i += 1) {
     const normal = normals[i];
-    // The other shape's support point *against* this normal is its deepest point along it.
     const supportPoint = support(otherVertices, -normal.x, -normal.y);
     const v = vertices[i];
     const distance = normal.x * (supportPoint.x - v.x) + normal.y * (supportPoint.y - v.y);
@@ -344,7 +325,6 @@ function clipToPlane(normal, offset, face) {
   if (d1 <= 0) out.push(face[0]);
   if (d2 <= 0) out.push(face[1]);
 
-  // Opposite signs means the segment crosses the plane.
   if (d1 * d2 < 0) {
     const alpha = d1 / (d1 - d2);
     out.push(face[0].lerp(face[1], alpha));

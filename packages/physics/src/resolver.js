@@ -123,14 +123,11 @@ export function prepareContact(manifold, bodyA, bodyB, positionA, positionB, pre
   const invInertiaB = effectiveInverseInertia(bodyB);
   const inverseMassSum = invMassA + invMassB;
 
-  // Two immovable bodies overlapping is a level-design problem, not a physics one.
   if (inverseMassSum <= 0) return null;
 
   const normal = manifold.normal;
   const tangent = new Vec2(-normal.y, normal.x);
   const restitution = Math.min(bodyA.restitution, bodyB.restitution);
-  // Friction between two materials is conventionally the geometric mean of their coefficients,
-  // which keeps a slippery body slippery even against a grippy one.
   const friction = Math.sqrt(bodyA.friction * bodyB.friction);
 
   /** @type {ContactPoint[]} */
@@ -152,8 +149,6 @@ export function prepareContact(manifold, bodyA, bodyB, positionA, positionB, pre
     const tangentDenominator =
       inverseMassSum + raCrossT * raCrossT * invInertiaA + rbCrossT * rbCrossT * invInertiaB;
 
-    // Restitution is measured against the approach velocity *before* solving. Measuring it
-    // during the solve would compound it across passes.
     const approach = relativeNormalVelocity(bodyA, bodyB, rax, ray, rbx, rby, normal);
     const velocityBias = -approach > RESTITUTION_THRESHOLD ? restitution * approach : 0;
 
@@ -170,10 +165,6 @@ export function prepareContact(manifold, bodyA, bodyB, positionA, positionB, pre
     });
   }
 
-  // Seed from the previous step, but only when the manifold has the same shape. Contact points
-  // are matched by index, which holds while the reference face is stable and is exactly what a
-  // changed count signals is no longer true — so a differing count discards the cache rather
-  // than applying last step's edge impulse to this step's face contact.
   if (previousImpulses !== undefined && previousImpulses.normal.length === points.length) {
     for (let i = 0; i < points.length; i += 1) {
       points[i].normalImpulse = previousImpulses.normal[i];
@@ -241,15 +232,11 @@ export function captureImpulses(constraint) {
 export function solveContact(constraint, bodyA, bodyB) {
   const { normal, tangent, friction, points } = constraint;
 
-  // Normal impulses first: friction's Coulomb limit depends on the normal impulse, so solving
-  // friction against a stale normal impulse would let a body slide on the frame it lands.
   for (const point of points) {
     const vn = relativeNormalVelocity(bodyA, bodyB, point.rax, point.ray, point.rbx, point.rby, normal);
 
     const lambda = -(vn + point.velocityBias) * point.normalMass;
 
-    // Clamp the accumulated total, not this pass's increment. A contact may only push, never
-    // pull, and clamping the increment would let an earlier over-correction stay stuck.
     const previous = point.normalImpulse;
     point.normalImpulse = Math.max(previous + lambda, 0);
     const applied = point.normalImpulse - previous;
@@ -271,8 +258,6 @@ export function solveContact(constraint, bodyA, bodyB) {
 
     const lambda = -vt * point.tangentMass;
 
-    // Coulomb's law: friction can never exceed mu times the normal force. Without the clamp,
-    // friction reverses a sliding body instead of merely slowing it.
     const limit = friction * point.normalImpulse;
     const previous = point.tangentImpulse;
     point.tangentImpulse = clamp(previous + lambda, -limit, limit);
@@ -355,7 +340,6 @@ export function resolveContact(manifold, bodyA, bodyB, positionA, positionB, ite
  * @returns {number}
  */
 function relativeNormalVelocity(bodyA, bodyB, rax, ray, rbx, rby, normal) {
-  // Velocity of a point on a rotating body is v + omega x r, which in 2D is (-w*ry, w*rx).
   const ax = bodyA.velocity.x - bodyA.angularVelocity * ray;
   const ay = bodyA.velocity.y + bodyA.angularVelocity * rax;
   const bx = bodyB.velocity.x - bodyB.angularVelocity * rby;

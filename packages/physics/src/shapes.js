@@ -12,9 +12,6 @@ import { Vec2, AABB, EPSILON } from '@novaforge/math';
  * @enum {string}
  */
 export const ShapeType = {
-  // Cast to the literal type rather than left as `string`, so that `shape.type === CIRCLE`
-  // actually narrows the union at the call site. Without this every branch of the narrowphase
-  // would need a cast to reach `radius` or `vertices`.
   CIRCLE: /** @type {'circle'} */ ('circle'),
   POLYGON: /** @type {'polygon'} */ ('polygon'),
 };
@@ -85,7 +82,6 @@ export function polygon(vertices) {
     if (edge.lengthSquared() < EPSILON * EPSILON) {
       throw new RangeError('polygon: found a zero-length edge (duplicate vertices?)');
     }
-    // For counter-clockwise winding the outward normal is the edge rotated -90 degrees.
     const normal = new Vec2(edge.y, -edge.x).normalizeSelf();
     normals.push({ x: normal.x, y: normal.y });
   }
