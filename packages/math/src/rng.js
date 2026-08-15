@@ -125,7 +125,7 @@ export class Rng {
       roll -= Math.max(0, weights[i]);
       if (roll < 0) return i;
     }
-    return weights.length - 1; // float drift guard
+    return weights.length - 1;
   }
 
   /**
@@ -167,7 +167,6 @@ export class Rng {
    * @returns {number}
    */
   gaussian(mean = 0, stdDev = 1) {
-    // u must be non-zero for the logarithm.
     let u = 0;
     while (u === 0) u = this.next();
     const v = this.next();

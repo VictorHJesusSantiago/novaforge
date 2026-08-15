@@ -19,7 +19,6 @@ export class Vec2 {
     this.y = y;
   }
 
-  // ---------------------------------------------------------------- factories
 
   /** @returns {Vec2} */
   static zero() {
@@ -33,7 +32,7 @@ export class Vec2 {
 
   /** @returns {Vec2} */
   static up() {
-    return new Vec2(0, -1); // screen space: -y is up
+    return new Vec2(0, -1);
   }
 
   /** @returns {Vec2} */
@@ -69,7 +68,6 @@ export class Vec2 {
     return new Vec2(source.x, source.y);
   }
 
-  // ------------------------------------------------------------- basic access
 
   /** @returns {Vec2} */
   clone() {
@@ -97,7 +95,6 @@ export class Vec2 {
     return this;
   }
 
-  // -------------------------------------------------------------- arithmetic
 
   /**
    * @param {{ x: number, y: number }} other
@@ -179,7 +176,6 @@ export class Vec2 {
     return new Vec2(-this.x, -this.y);
   }
 
-  // ------------------------------------------------------------ measurements
 
   /** @returns {number} */
   length() {
@@ -245,7 +241,6 @@ export class Vec2 {
     return Math.atan2(this.cross(other), this.dot(other));
   }
 
-  // ------------------------------------------------------------ manipulation
 
   /**
    * @returns {Vec2} unit vector, or a zero vector if this vector has no direction.
@@ -369,7 +364,6 @@ export class Vec2 {
     return new Vec2(clamp(this.x, min.x, max.x), clamp(this.y, min.y, max.y));
   }
 
-  // --------------------------------------------------------------- predicates
 
   /**
    * @param {{ x: number, y: number }} other
@@ -390,7 +384,6 @@ export class Vec2 {
     return Number.isFinite(this.x) && Number.isFinite(this.y);
   }
 
-  // ------------------------------------------------------------ serialisation
 
   /** @returns {{ x: number, y: number }} */
   toJSON() {
