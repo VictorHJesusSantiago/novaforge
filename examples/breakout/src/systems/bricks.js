@@ -29,11 +29,9 @@ export function brickSystem(world) {
     if (brick === null) continue;
 
     const data = world.get(brick, Brick);
-    if (data === undefined) continue; // already destroyed by an earlier contact this frame
+    if (data === undefined) continue;
 
     session.score += data.points;
-    // Deferred: the entity stops matching queries immediately, and its storage is reclaimed at
-    // the end of the frame once every system has run.
     world.destroy(brick);
     destroyed += 1;
   }

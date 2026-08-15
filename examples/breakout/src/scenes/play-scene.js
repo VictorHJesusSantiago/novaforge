@@ -24,9 +24,6 @@ import { hudSystem } from '../systems/hud.js';
  */
 export class PlayScene extends Scene {
   preload() {
-    // Breakout draws entirely with shape primitives, so it has no texture manifest. Sounds are
-    // listed but optional: the mixer falls back to silence for anything that fails to load
-    // (Invariant A1), so the game is fully playable with the asset directory empty.
     return {
       sounds: {
         brick: 'sounds/brick.wav',
@@ -49,7 +46,6 @@ export class PlayScene extends Scene {
     this.rebuildLevel();
     this._registerSystems();
 
-    // The camera sits on the playfield centre and never moves; breakout has no scrolling.
     game.camera.snapTo({ x: PLAYFIELD.width / 2, y: PLAYFIELD.height / 2 });
   }
 
@@ -119,9 +115,6 @@ export class PlayScene extends Scene {
     for (const [entity] of world.query([Brick])) {
       world.destroy(entity);
     }
-    // Reclaim now rather than at the end of the frame: the new bricks are about to be created
-    // at the same positions, and two sets overlapping for a frame would produce a burst of
-    // spurious contacts.
     world.flushDestroyed();
 
     for (let row = 0; row < BRICKS.rows; row += 1) {
@@ -133,17 +126,6 @@ export class PlayScene extends Scene {
 
   /** @private */
   _registerSystems() {
-    // Ordering is the interesting part of this file.
-    //
-    // The engine occupies two slots in `fixedUpdate`: `syncPreviousTransform` at -1000 and the
-    // physics step at 0. Everything here is placed relative to those.
-    //
-    //   -1000  syncPreviousTransform   (engine)
-    //     -20  paddle                  set the paddle's velocity BEFORE the integrator runs
-    //       0  physicsStep             (engine) integrates and resolves
-    //      90  ballAttach              park the ball on the paddle's POST-integration position,
-    //                                  otherwise it trails the paddle by one step of movement
-    //     100  ballSpeed               renormalise AFTER the solver has changed the velocity
     this.addSystem('fixedUpdate', paddleSystem, { order: -20, name: 'paddle' });
     this.addSystem('fixedUpdate', ballAttachSystem, { order: 90, name: 'ballAttach' });
     this.addSystem('fixedUpdate', ballSpeedSystem, { order: 100, name: 'ballSpeed' });
@@ -157,15 +139,13 @@ export class PlayScene extends Scene {
     });
     this.addSystem('update', hudSystem, { order: 100, name: 'hud' });
 
-    // Pushing rather than changing: the level stays resident underneath, so resuming costs
-    // nothing and no state has to be saved.
     this.addSystem(
       'update',
       (world) => {
         const input = world.getResource(INPUT_RESOURCE);
         const scenes = this._game?.scenes;
         if (scenes === undefined || scenes.isTransitioning) return;
-        if (scenes.active !== this) return; // already paused; the pause scene owns Escape now
+        if (scenes.active !== this) return;
         if (input?.actions.pressed('pause')) void scenes.push('pause');
       },
       { order: -100, name: 'pauseInput' },

@@ -27,8 +27,6 @@ export function ballAttachSystem(world) {
 
     transform.position.x = paddleTransform.position.x;
     transform.position.y = PADDLE.y - PADDLE.height / 2 - BALL.radius - 1;
-    // Keep the interpolated render in step with the teleport, or the ball smears across the
-    // screen on the frame it is repositioned.
     transform.previousPosition.copyFrom(transform.position);
     body.velocity.set(0, 0);
 
@@ -61,7 +59,7 @@ export function ballSpeedSystem(world) {
     if (ball.attached) return;
 
     const speed = body.velocity.length();
-    if (speed < 1) return; // wedged; the next contact will free it
+    if (speed < 1) return;
 
     let { x, y } = body.velocity;
 
@@ -69,7 +67,6 @@ export function ballSpeedSystem(world) {
     if (Math.abs(y) / speed < minVertical) {
       const sign = y < 0 ? -1 : 1;
       y = sign * speed * minVertical;
-      // Rebuild the horizontal component so the direction stays a unit vector.
       const horizontal = Math.sqrt(Math.max(0, speed * speed - y * y));
       x = (x < 0 ? -1 : 1) * horizontal;
     }
@@ -111,8 +108,6 @@ export function ballLossSystem(world) {
     return;
   }
 
-  // Reattach rather than respawn: the ball entity keeps its identity, so anything holding a
-  // handle to it stays valid.
   world.query([Ball]).each((_entity, ball) => {
     ball.attached = true;
   });
