@@ -5,8 +5,6 @@ import { Bus } from '../bus.js';
 /** @type {AudioMixer} */ let mixer;
 
 beforeEach(() => {
-  // `context: null` forces silent mode, which is also what Node gives you anyway. The mixer
-  // keeps a complete model of what would be playing, so everything below is still assertable.
   mixer = new AudioMixer({ context: null });
 });
 
@@ -19,7 +17,6 @@ describe('silent mode', () => {
     expect(mixer.busNames().sort()).toEqual(['music', 'sfx', 'ui']);
   });
 
-  // A game that crashes on a missing sound effect is unshippable.
   it('plays without throwing and reports a voice id', () => {
     expect(() => mixer.play('explosion')).not.toThrow();
     expect(mixer.play('explosion')).toBeGreaterThan(0);
@@ -48,7 +45,6 @@ describe('buses', () => {
     expect(mixer.createBus('sfx')).toBe(mixer.bus('sfx'));
   });
 
-  // A typo'd bus name should mis-route the sound, not kill the frame it was triggered on.
   it('creates an unknown bus on demand instead of throwing', () => {
     expect(() => mixer.bus('typo')).not.toThrow();
     expect(mixer.busNames()).toContain('typo');
@@ -118,8 +114,6 @@ describe('voices', () => {
     expect(mixer.voiceCount).toBe(0);
   });
 
-  // 200 identical explosions in one frame are inaudible as anything but clipping, and a real
-  // performance problem.
   it('refuses to exceed the voice cap', () => {
     mixer.maxVoices = 4;
     for (let i = 0; i < 100; i += 1) mixer.play('spam', { loop: true });
@@ -145,7 +139,6 @@ describe('loading', () => {
     await expect(mixer.load('x', 'missing.ogg')).resolves.toBe(false);
   });
 
-  // One bad path must not fail a scene's whole preload.
   it('resolves loadAll even when every entry fails', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     await expect(mixer.loadAll({ a: 'a.ogg', b: 'b.ogg' })).resolves.toBeUndefined();

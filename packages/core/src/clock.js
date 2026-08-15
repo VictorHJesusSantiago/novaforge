@@ -80,8 +80,6 @@ export class Clock {
    */
   advance(nowMs) {
     if (this._lastTime === null) {
-      // The first frame has no previous timestamp. Reporting a delta of 0 is the only honest
-      // answer; inventing 1/60 would make the first frame of a replay differ from the rest.
       this._lastTime = nowMs;
       this.frame += 1;
       this.delta = 0;

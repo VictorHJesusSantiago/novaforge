@@ -94,7 +94,7 @@ export class AudioMixer {
    */
   setMuted(muted) {
     this.muted = muted;
-    this.masterVolume = this._masterVolume; // re-apply through the setter
+    this.masterVolume = this._masterVolume;
   }
 
   /**
@@ -192,9 +192,6 @@ export class AudioMixer {
     const volume = clamp(options.volume ?? 1, 0, 1);
 
     if (this._voices.size >= this.maxVoices) {
-      // Dropping the newest is the right choice: the already-playing sounds are the ones the
-      // player has begun to hear, and cutting one off is more noticeable than never starting
-      // the two hundredth copy of an explosion.
       return 0;
     }
 
@@ -202,7 +199,6 @@ export class AudioMixer {
     this._nextVoiceId += 1;
 
     if (this.context === null) {
-      // Silent mode still models the voice, so tests and the debug overlay see the truth.
       this._voices.set(voiceId, { id, bus: busName, loop, source: null, gain: null });
       if (!loop) this._voices.delete(voiceId);
       return voiceId;
@@ -245,11 +241,9 @@ export class AudioMixer {
     const voice = this._voices.get(voiceId);
     if (voice === undefined) return false;
 
-    // A source already ended throws on stop(); it is not an error worth propagating.
     try {
       voice.source?.stop();
     } catch {
-      /* already stopped */
     }
     this._voices.delete(voiceId);
     return true;
