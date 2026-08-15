@@ -28,9 +28,6 @@ export class PlayScene extends Scene {
   _ship = 0;
 
   preload() {
-    // Asteroids draws entirely with shape primitives, so it has no texture manifest. Sounds are
-    // optional: the mixer falls back to silence for anything that fails to load (Invariant A1),
-    // so the game is fully playable with the asset directory empty.
     return {
       sounds: {
         shoot: 'sounds/shoot.wav',
@@ -53,8 +50,6 @@ export class PlayScene extends Scene {
     this.rebuildWave();
     this._registerSystems();
 
-    // The camera sits on the playfield centre and never moves; there is no scrolling here, the
-    // wrap system is what stands in for an infinite world.
     game.camera.snapTo({ x: PLAYFIELD.width / 2, y: PLAYFIELD.height / 2 });
   }
 
@@ -103,17 +98,12 @@ export class PlayScene extends Scene {
     for (const [entity] of world.query([Asteroid])) {
       world.destroy(entity);
     }
-    // Reclaim now rather than at the end of the frame: the new asteroids are about to spawn, and
-    // a stray frame of the old and new sets overlapping would produce spurious contacts — same
-    // reasoning as breakout's `rebuildLevel`.
     world.flushDestroyed();
 
     const session = world.getResource(SESSION);
     const count = WAVE.baseCount + (session.wave - 1) * WAVE.increasePerWave;
     const centerX = PLAYFIELD.width / 2;
     const centerY = PLAYFIELD.height / 2;
-    // Spawned on a ring outside the playfield's own half-diagonal, so a fresh wave never appears
-    // on top of the ship parked at centre.
     const spawnRadius = Math.max(PLAYFIELD.width, PLAYFIELD.height) * 0.55;
 
     for (let i = 0; i < count; i += 1) {
@@ -169,13 +159,6 @@ export class PlayScene extends Scene {
 
   /** @private */
   _registerSystems() {
-    // Ordering, as in breakout, is the interesting part of this file.
-    //
-    //   -1000  syncPreviousTransform   (engine)
-    //     -20  shipControl             set velocity/rotation BEFORE the integrator runs
-    //       0  physicsStep             (engine) integrates and resolves
-    //      50  wrap                    correct positions the integrator just produced
-    //      60  bulletLife              despawn expired shots after they have had their step
     this.addSystem('fixedUpdate', makeShipControlSystem(this), { order: -20, name: 'shipControl' });
     this.addSystem('fixedUpdate', wrapSystem, { order: 50, name: 'wrap' });
     this.addSystem('fixedUpdate', bulletLifeSystem, { order: 60, name: 'bulletLife' });
@@ -197,15 +180,13 @@ export class PlayScene extends Scene {
     );
     this.addSystem('update', hudSystem, { order: 100, name: 'hud' });
 
-    // Pushing rather than changing: the run stays resident underneath, so resuming costs nothing
-    // and no state has to be saved — same reasoning as breakout's pause handling.
     this.addSystem(
       'update',
       (world) => {
         const input = world.getResource(INPUT_RESOURCE);
         const scenes = this._game?.scenes;
         if (scenes === undefined || scenes.isTransitioning) return;
-        if (scenes.active !== this) return; // already paused; the pause scene owns Escape now
+        if (scenes.active !== this) return;
         if (input?.actions.pressed('pause')) void scenes.push('pause');
       },
       { order: -100, name: 'pauseInput' },

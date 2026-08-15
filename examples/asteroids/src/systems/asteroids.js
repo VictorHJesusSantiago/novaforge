@@ -44,9 +44,6 @@ export function makeBulletAsteroidSystem(scene, rng) {
     if (events.length === 0) return;
 
     const audio = world.getResource(AUDIO_RESOURCE);
-    // A bullet can only appear as `trigger` in one contact per step (it is a point-ish shape),
-    // but guard against processing it twice anyway — cheap, and it is exactly the kind of
-    // invariant that is easy to accidentally break later.
     const handledBullets = new Set();
     let destroyedAny = false;
 
@@ -56,7 +53,7 @@ export function makeBulletAsteroidSystem(scene, rng) {
       if (!world.has(trigger, Bullet) || !world.has(other, Asteroid)) continue;
 
       const asteroidData = world.get(other, Asteroid);
-      if (asteroidData === undefined) continue; // already destroyed by an earlier event this frame
+      if (asteroidData === undefined) continue;
       handledBullets.add(trigger);
 
       session.score += ASTEROID.sizes[asteroidData.size].points;
@@ -68,8 +65,6 @@ export function makeBulletAsteroidSystem(scene, rng) {
           const angle = rng.range(0, TAU);
           const speed = ASTEROID.sizes[nextSize].speed * rng.range(0.8, 1.2);
           createAsteroid(scene, {
-            // `splitInto`'s values are genuinely always one of the three size names; the cast
-            // is for the type checker, not a runtime assumption.
             size: /** @type {'large'|'medium'|'small'} */ (nextSize),
             x: parentTransform.position.x,
             y: parentTransform.position.y,
@@ -78,8 +73,6 @@ export function makeBulletAsteroidSystem(scene, rng) {
         }
       }
 
-      // Deferred: both entities stop matching queries immediately, and storage is reclaimed at
-      // the end of the frame once every system has had its turn.
       world.destroy(other);
       world.destroy(trigger);
       destroyedAny = true;
