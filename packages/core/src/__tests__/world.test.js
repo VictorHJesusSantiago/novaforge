@@ -71,8 +71,6 @@ describe('entity lifecycle', () => {
 });
 
 describe('entity handle generations', () => {
-  // Invariant E1. This is the single most important correctness property in the ECS: it is
-  // what makes it safe for a component to hold another entity's handle.
   it('does not resurrect a stale handle when the index is reused', () => {
     const world = new World();
     const first = world.createEntity();
@@ -80,8 +78,8 @@ describe('entity handle generations', () => {
     world.flushDestroyed();
 
     const second = world.createEntity();
-    expect(entityIndex(second)).toBe(entityIndex(first)); // index was recycled
-    expect(second).not.toBe(first); // but the handle differs
+    expect(entityIndex(second)).toBe(entityIndex(first));
+    expect(second).not.toBe(first);
     expect(world.isAlive(first)).toBe(false);
     expect(world.isAlive(second)).toBe(true);
   });
@@ -101,7 +99,6 @@ describe('entity handle generations', () => {
     expect(world.get(fresh, Position)?.x).toBe(1);
   });
 
-  // Invariant E3: LIFO reuse keeps the dense arrays compact.
   it('reuses indices last-in-first-out', () => {
     const world = new World();
     const a = world.createEntity();
@@ -122,7 +119,6 @@ describe('entity handle generations', () => {
       world.flushDestroyed();
     }
     expect(world.entityCount).toBe(0);
-    // One index, recycled ten thousand times.
     expect(world.stats().storedComponents).toBe(0);
   });
 });
@@ -140,8 +136,6 @@ describe('components', () => {
     expect(world.add(e, Position, { x: 5 })).toEqual({ x: 5, y: 0 });
   });
 
-  // A shared instance across entities is a bug that hides for a long time, so the factory
-  // contract is asserted directly.
   it('gives every entity its own instance', () => {
     const world = new World();
     const a = world.createEntity();
@@ -177,7 +171,6 @@ describe('components', () => {
     expect(world.has(e, Frozen)).toBe(true);
   });
 
-  // A silent no-op here produces entities that mysteriously lack components later.
   it('throws when adding to a dead entity', () => {
     const world = new World();
     const e = world.createEntity();
@@ -231,7 +224,6 @@ describe('resources', () => {
     expect(new World().getResource('nope')).toBeUndefined();
   });
 
-  // Usually means a plugin failed to install; failing loudly points straight at it.
   it('requireResource throws with the key in the message', () => {
     expect(() => new World().requireResource('renderer')).toThrow(/renderer/);
   });
@@ -245,8 +237,6 @@ describe('entities', () => {
     expect(world.entities().sort()).toEqual([a, b].sort());
   });
 
-  // Deliberately not a query: the editor's scene tree must see an entity with nothing on it
-  // yet, and a query requires at least one component.
   it('includes entities with no components at all', () => {
     const world = new World();
     const bare = world.createEntity();

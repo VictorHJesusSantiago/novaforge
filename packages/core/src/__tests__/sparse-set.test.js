@@ -81,8 +81,6 @@ describe('SparseSet deletion', () => {
 });
 
 describe('SparseSet invariants', () => {
-  // Invariant C1 (SPEC §4): sparse, dense and data must stay in lockstep. Swap-remove is the
-  // operation most likely to break it, so it is exercised hard here.
   it('holds C1 through a long random workload', () => {
     const set = new SparseSet();
     let seed = 1234;
@@ -115,7 +113,6 @@ describe('SparseSet invariants', () => {
     set.set(10, 'a');
     set.set(20, 'b');
     set.delete(20);
-    // 20's old sparse slot pointed at dense index 1, which no longer exists.
     expect(set.has(20)).toBe(false);
     expect(set.get(20)).toBeUndefined();
   });

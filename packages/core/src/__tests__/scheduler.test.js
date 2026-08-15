@@ -50,7 +50,6 @@ describe('stage registration', () => {
     expect(() => new Scheduler().run('render', new World(), 0)).not.toThrow();
   });
 
-  // A typo would otherwise register a system that simply never runs.
   it('throws on an unknown stage and lists the valid ones', () => {
     const scheduler = new Scheduler();
     expect(() => scheduler.add(/** @type {any} */ ('tick'), () => {})).toThrow(/preUpdate/);
@@ -127,7 +126,6 @@ describe('lifecycle', () => {
     expect(ran).toBe(1);
   });
 
-  // Plugins installed at runtime do exactly this, so the running list must be a copy.
   it('allows a system to register another system mid-stage', () => {
     const scheduler = new Scheduler();
     const world = new World();
@@ -138,7 +136,7 @@ describe('lifecycle', () => {
       });
     });
 
-    scheduler.run('update', world, 0); // registers, does not run the new one
+    scheduler.run('update', world, 0);
     expect(added).toBe(0);
     scheduler.run('update', world, 0);
     expect(added).toBe(1);

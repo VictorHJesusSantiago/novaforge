@@ -72,9 +72,6 @@ describe('query matching', () => {
 });
 
 describe('query mutation safety', () => {
-  // Invariant Q1. Without the snapshot, a swap-remove during iteration moves an unvisited
-  // entity into an already-visited slot and it is silently skipped — the classic
-  // "every other enemy survives" bug.
   it('visits every survivor when entities are destroyed mid-iteration', () => {
     const world = new World();
     const entities = [];
@@ -100,7 +97,6 @@ describe('query mutation safety', () => {
     const seen = [];
     for (const [entity] of world.query([Position])) {
       seen.push(entity);
-      // Destroy everything on the first visit.
       world.destroy(a);
       world.destroy(b);
       world.destroy(c);
@@ -119,7 +115,6 @@ describe('query mutation safety', () => {
       if (visits < 50) world.spawn([Position]);
     }
 
-    // The snapshot was taken before any of the new entities existed.
     expect(visits).toBe(1);
     expect(world.entityCount).toBe(2);
   });
@@ -135,15 +130,12 @@ describe('query mutation safety', () => {
       if (entity === a) world.remove(b, Health);
     }
 
-    // Whichever came first, the other must have been re-checked and rejected.
     if (seen[0] === a) expect(seen).toEqual([a]);
     else expect(seen).toEqual([b, a]);
   });
 });
 
 describe('query driving store', () => {
-  // The performance property from SPEC §5: cost is bounded by the rarest component, not by
-  // the world size.
   it('drives iteration from the smallest participating store', () => {
     const world = new World();
     for (let i = 0; i < 5000; i += 1) world.spawn([Position]);
@@ -151,7 +143,6 @@ describe('query driving store', () => {
 
     const query = world.query([Position, Health]);
 
-    // Count probes by instrumenting the small store's snapshot method.
     const smallStore = world.store(Health);
     let snapshots = 0;
     const original = smallStore.entityIndices.bind(smallStore);
@@ -189,7 +180,7 @@ describe('query iteration forms', () => {
     world.query([Position, Velocity, Health, D]).each((...args) => {
       arity = args.length;
     });
-    expect(arity).toBe(5); // entity + four components
+    expect(arity).toBe(5);
   });
 
   it('count matches the number of yielded entities', () => {

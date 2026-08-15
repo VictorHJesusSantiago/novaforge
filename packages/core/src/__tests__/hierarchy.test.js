@@ -45,7 +45,6 @@ describe('setParent / getParent', () => {
     expect(getParent(world, child)).toBe(b);
   });
 
-  // Invariant E1 reused: a stale Parent reference must degrade to "no parent", not crash.
   it('treats a destroyed parent as no parent', () => {
     const world = new World();
     const parent = world.createEntity();
@@ -225,7 +224,6 @@ describe('destroyHierarchy', () => {
     expect(world.isAlive(other)).toBe(true);
   });
 
-  // Plain world.destroy is the deliberate contrast: it orphans children instead.
   it('differs from plain world.destroy, which orphans children instead of cascading', () => {
     const world = new World();
     const root = world.createEntity();
