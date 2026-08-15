@@ -26,16 +26,9 @@ export function paddleSystem(world, dt) {
   const maxX = PLAYFIELD.width - PLAYFIELD.wallThickness - halfWidth;
 
   world.query([Transform, RigidBody, Paddle]).each((_entity, transform, body) => {
-    // Set the velocity and let the integrator move the paddle. Writing `transform.position`
-    // here as well would move it twice per step — once directly, once by the integrator — and
-    // the resulting overshoot-and-clamp oscillation is both visible and impossible to explain
-    // from the symptom.
     const target = transform.position.x + direction * PADDLE.speed * dt;
     const clamped = clamp(target, minX, maxX);
 
-    // Deriving the velocity from the movement actually permitted means a paddle pinned against
-    // a wall reports zero velocity, rather than a phantom push the solver would impart to the
-    // ball as english.
     body.velocity.x = (clamped - transform.position.x) / dt;
     body.velocity.y = 0;
   });

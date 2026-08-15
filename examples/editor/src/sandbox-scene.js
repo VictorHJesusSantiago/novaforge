@@ -87,9 +87,5 @@ export function buildSandboxScene(game) {
   );
   world.get(label, Transform)?.position.set(0, -220);
 
-  // The camera Game already built from the canvas's own size is exactly what is wanted here —
-  // replacing it with a new instance would leave `installInputSystems`'s closure (captured in
-  // Game's constructor) pointing at the old one, silently breaking mouse world-position
-  // projection. Reusing the existing camera is not a shortcut; it is the only correct option.
   game.camera.snapTo({ x: 0, y: 0 });
 }

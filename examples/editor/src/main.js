@@ -3,8 +3,6 @@ import { Canvas2DRenderer, WebGL2Renderer } from '@novaforge/renderer';
 import { Editor, Splitter, installDefaultShortcuts } from '@novaforge/editor';
 import { buildSandboxScene } from './sandbox-scene.js';
 
-// The engine packages ship as plain ESM with no build step; the editor's stylesheet is no
-// different — it is loaded the same way any other CSS asset would be in a Vite app.
 import '../../../packages/editor/src/style.css';
 
 const gameCanvas = /** @type {HTMLCanvasElement} */ (document.getElementById('game'));
@@ -28,10 +26,6 @@ const editor = new Editor(game, {
 
 installDefaultShortcuts(editor);
 
-// --- resizable panels -------------------------------------------------------
-//
-// Every splitter writes into a CSS custom property that #app's own grid-template-columns/rows
-// already reference (see index.html) — Splitter never touches the grid template string itself.
 
 const appRoot = /** @type {HTMLElement} */ (document.getElementById('app'));
 
@@ -51,8 +45,6 @@ new Splitter(/** @type {HTMLElement} */ (document.getElementById('splitter-inspe
   initial: 300,
   min: 220,
   max: 520,
-  // The inspector panel is anchored to the trailing (right) edge, so dragging its splitter
-  // rightward should shrink it, not grow it — the mirror image of the tree splitter above.
   invert: true,
 });
 
@@ -66,7 +58,6 @@ new Splitter(/** @type {HTMLElement} */ (document.getElementById('splitter-botto
   invert: true,
 });
 
-// --- bottom panel tabs -------------------------------------------------------
 
 const assetsTab = /** @type {HTMLButtonElement} */ (document.getElementById('tab-assets'));
 const timelineTab = /** @type {HTMLButtonElement} */ (document.getElementById('tab-timeline'));
@@ -83,7 +74,6 @@ function showBottomTab(which) {
 assetsTab.addEventListener('click', () => showBottomTab('assets'));
 timelineTab.addEventListener('click', () => showBottomTab('timeline'));
 
-// --- gizmo mode + snapping ---------------------------------------------------
 
 const gizmoButtons = /** @type {Record<'translate'|'rotate'|'scale', HTMLButtonElement>} */ ({
   translate: /** @type {HTMLButtonElement} */ (document.getElementById('gizmo-translate')),
@@ -102,9 +92,6 @@ gizmoButtons.translate.addEventListener('click', () => setGizmoMode('translate')
 gizmoButtons.rotate.addEventListener('click', () => setGizmoMode('rotate'));
 gizmoButtons.scale.addEventListener('click', () => setGizmoMode('scale'));
 
-// Poll once a frame rather than wiring a change event: the keyboard shortcuts (1/2/3) also
-// change `gizmoMode` directly, and re-deriving the toolbar's active button from whatever the
-// mode currently is keeps both input paths in sync with one piece of code.
 function syncGizmoButtons() {
   for (const [name, button] of Object.entries(gizmoButtons)) {
     button.dataset.active = String(name === editor.viewportOverlay.gizmoMode);
@@ -125,18 +112,6 @@ for (const input of [snapPositionToggle, snapGridSizeInput, snapRotationToggle, 
 }
 syncSnapSettings();
 
-// --- live renderer backend switch --------------------------------------------
-//
-// Proves Invariant R1 (SPEC "Rendering") in the most direct way there is: the exact same
-// DrawList, produced by the exact same render systems, driving two different GPU/CPU paths,
-// swapped while the game keeps running. Canvas2D and WebGL2 cannot share one <canvas> — once a
-// context type is requested from a canvas element, that element is locked to it forever — so
-// each backend gets its own canvas, stacked identically, and switching means constructing the
-// target backend, disposing the one being replaced, and toggling which canvas is visible.
-//
-// WebGL2Renderer does not render TEXT commands unless given a `textOverlay` (see its class doc
-// for why); none is wired here, so the sandbox scene's title label simply does not draw while
-// WebGL2 is active — that is the documented, intentional degradation, not a bug in this demo.
 
 const canvas2dCanvas = gameCanvas;
 const webgl2Canvas = /** @type {HTMLCanvasElement} */ (document.getElementById('game-webgl'));
@@ -157,8 +132,6 @@ function switchBackend(kind) {
     try {
       editor.game.renderer = new WebGL2Renderer(webgl2Canvas, { textures: game.textures });
     } catch (error) {
-      // A browser or device with no WebGL2 support is a real, expected case, not a bug — fail
-      // back to Canvas2D instead of leaving the game with no renderer at all.
       console.warn('WebGL2 unavailable, staying on Canvas2D:', error);
       return;
     }
@@ -182,7 +155,6 @@ function updateRendererStats() {
   statsReadout.textContent = `${info.fps} fps · ${info.drawCalls} draw calls · ${info.drawCommands} cmds`;
 }
 
-// --- toolbar wiring -----------------------------------------------------------
 
 const playButton = /** @type {HTMLButtonElement} */ (document.getElementById('btn-play'));
 const stopButton = /** @type {HTMLButtonElement} */ (document.getElementById('btn-stop'));
@@ -248,7 +220,6 @@ loadInput.addEventListener('change', async () => {
 
 refreshToolbar();
 
-// --- frame loop -------------------------------------------------------------
 
 /**
  * The editor is the sole driver of the frame loop (see the Editor class doc for why) — this is
