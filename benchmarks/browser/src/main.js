@@ -14,7 +14,7 @@ import { DrawList, Camera2D, Canvas2DRenderer, WebGL2Renderer, TextureCache } fr
 const SPRITE_COUNTS = [500, 2000, 8000];
 const WARMUP_FRAMES = 20;
 const MEASURED_FRAMES = 120;
-const TEXTURE_COUNT = 8; // several textures, so batching by texture-run is actually exercised
+const TEXTURE_COUNT = 8;
 
 /** @returns {HTMLCanvasElement} a small solid-colour texture. */
 function makeTexture(color) {

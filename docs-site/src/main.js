@@ -62,8 +62,6 @@ function renderDoc(slug) {
     main.innerHTML = `<p>No such doc: <code>${escapeHtml(slug)}</code>. <a href="#/">Back home</a>.</p>`;
     return;
   }
-  // marked.parse()'s return type is `string | Promise<string>` because of its async-extension
-  // hook — this site registers none, so the call is always synchronous.
   main.innerHTML = /** @type {string} */ (marked.parse(doc.markdown));
 }
 
