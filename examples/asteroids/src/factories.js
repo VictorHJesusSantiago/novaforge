@@ -25,7 +25,6 @@ export function createShip(scene) {
       Transform,
       {
         position: new Vec2(PLAYFIELD.width / 2, PLAYFIELD.height / 2),
-        // Facing "up" the screen, matching every other arcade ship ever drawn.
         rotation: -Math.PI / 2,
       },
     ],
@@ -36,13 +35,8 @@ export function createShip(scene) {
       {
         type: BodyType.DYNAMIC,
         gravityScale: 0,
-        // Space friction is not physically real, but a ship with none is nearly unplayable with
-        // a keyboard: every tap of thrust is permanent until cancelled by an equal tap the other
-        // way, and a two-value keyboard can never hold "half thrust".
         linearDamping: SHIP.drag,
         angularDamping: 0,
-        // Rotation is driven directly by `shipControlSystem`, not by physics torque — see that
-        // system for why. `fixedRotation` stops the integrator from touching it.
         fixedRotation: true,
         restitution: 0,
         friction: 0,
@@ -54,9 +48,6 @@ export function createShip(scene) {
         shape,
         layer: LAYER.SHIP,
         mask: LAYER.ASTEROID,
-        // A trigger, not a solid: the ship must detect an asteroid, not bounce off it. A
-        // physics bounce would fling the ship unpredictably on every hit, on top of costing a
-        // life — the player would lose control at exactly the moment they need it most.
         isTrigger: true,
       },
     ],
@@ -97,9 +88,6 @@ export function createAsteroid(scene, { size, x, y, velocity }) {
       {
         shape,
         layer: LAYER.ASTEROID,
-        // Asteroids never collide with each other (the mask below excludes LAYER.ASTEROID) —
-        // in the arcade original they drift through one another, and adding that collision
-        // would need mass tuning per size tier for a rule the genre has never required.
         mask: LAYER.SHIP | LAYER.BULLET,
         isTrigger: false,
       },
@@ -109,8 +97,6 @@ export function createAsteroid(scene, { size, x, y, velocity }) {
 
   const body = scene.world.getOrThrow(entity, RigidBody);
   body.velocity.set(velocity.x, velocity.y);
-  // A slow spin sells the "tumbling rock" look for free; the shape is a circle so it is
-  // otherwise invisible, but it costs nothing and does no harm.
   body.angularVelocity = (velocity.x + velocity.y) % 1.5;
 
   return entity;
@@ -148,8 +134,6 @@ export function createBullet(scene, { x, y, rotation }) {
         shape,
         layer: LAYER.BULLET,
         mask: LAYER.ASTEROID,
-        // A trigger: a bullet must report the hit and vanish, not bounce off the asteroid it
-        // just destroyed.
         isTrigger: true,
       },
     ],

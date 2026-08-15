@@ -26,7 +26,7 @@ beforeEach(async () => {
   await game.scenes.change('play');
 
   now = 0;
-  game.frame(now); // prime the clock
+  game.frame(now);
 });
 
 afterEach(async () => {
@@ -128,13 +128,12 @@ describe('ship control', () => {
     advance(30);
 
     expect(shipBody().velocity.length()).toBeGreaterThan(0);
-    // Facing up (-PI/2) at spawn, so thrust with no turning pushes straight up: -y.
     expect(shipBody().velocity.y).toBeLessThan(0);
   });
 
   it('never exceeds its configured maximum speed', () => {
     game.input.pushKeyDown('KeyW');
-    advance(300); // long enough for drag and thrust to reach equilibrium well past any overshoot
+    advance(300);
 
     expect(shipBody().velocity.length()).toBeLessThanOrEqual(SHIP.maxSpeed + 1e-6);
   });
@@ -166,14 +165,13 @@ describe('firing', () => {
     const found = game.world.query([RigidBody, Bullet]).first();
     if (found === null) throw new Error('no bullet');
     expect(found[1].velocity.length()).toBeCloseTo(BULLET.speed, 0);
-    // Facing up at spawn.
     expect(found[1].velocity.y).toBeLessThan(0);
   });
 
   it('respects its fire cooldown instead of machine-gunning', () => {
     game.input.pushKeyDown('Space');
-    advance(1); // one edge-triggered shot
-    advance(10); // still within the cooldown window while the key is held
+    advance(1);
+    advance(10);
 
     expect(game.world.query([Bullet]).count()).toBe(1);
   });
@@ -257,12 +255,10 @@ describe('destroying asteroids', () => {
   });
 
   it('destroys a small asteroid outright, with no further split', () => {
-    // Replace one asteroid with a small one under direct control, so the shot is guaranteed to
-    // land without depending on the wave's random large-asteroid placement.
     const found = game.world.query([Asteroid]).first();
     if (found === null) throw new Error('no asteroid');
     game.world.destroy(found[0]);
-    advance(1); // flush, so the query below does not still see it
+    advance(1);
 
     const world = game.world;
     const scene = /** @type {any} */ (game.scenes.active);
@@ -292,7 +288,6 @@ describe('losing a life', () => {
     if (found === null) throw new Error('no asteroid');
     const [asteroidEntity, asteroidTransform] = found;
 
-    // Fly the asteroid straight into the (centred) ship.
     asteroidTransform.position.set(PLAYFIELD.width / 2 - 100, PLAYFIELD.height / 2);
     const body = game.world.getOrThrow(asteroidEntity, RigidBody);
     body.velocity.set(400, 0);
@@ -328,7 +323,6 @@ describe('losing a life', () => {
     advance(60);
     expect(session.lives).toBe(RULES.lives - 1);
 
-    // The asteroid wraps and drifts; keep it parked on the respawned ship for a good while.
     body.velocity.set(0, 0);
     asteroidTransform.position.set(PLAYFIELD.width / 2, PLAYFIELD.height / 2);
     advance(90);
@@ -409,7 +403,7 @@ describe('pausing', () => {
     const asteroids = game.world.query([Asteroid]).count();
 
     tap('Escape');
-    await Promise.resolve(); // the push is async
+    await Promise.resolve();
 
     expect(game.scenes.depth).toBe(2);
     expect(game.scenes.active?.name).toBe('pause');
@@ -423,7 +417,7 @@ describe('pausing', () => {
 
     tap('Escape');
     await Promise.resolve();
-    advance(2); // let the pause scene's onEnter take effect
+    advance(2);
 
     const before = shipTransform().position.clone();
     advance(60);
@@ -452,8 +446,6 @@ describe('pausing', () => {
 });
 
 describe('draw output', () => {
-  // The renderer is absent headlessly, but the draw list is not — so what would have been drawn
-  // is fully assertable, same as breakout.
   it('emits a command per visible entity, sorted into draw order', () => {
     advance(1);
 
