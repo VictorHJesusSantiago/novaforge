@@ -95,7 +95,6 @@ export class World {
     this.resources = new Map();
   }
 
-  // ------------------------------------------------------------- entity lifecycle
 
   /**
    * @returns {number} a fresh entity handle.
@@ -197,8 +196,6 @@ export class World {
     for (const store of this._stores.values()) {
       store.delete(index);
     }
-    // Bump the generation so every handle minted for the old occupant now fails `isAlive`.
-    // Wrapping skips 0 to keep NULL_ENTITY unambiguous (Invariant E2).
     const next = this._generations[index] + 1;
     this._generations[index] = next > MAX_GENERATION ? 1 : next;
     this._freeIndices.push(index);
@@ -264,7 +261,6 @@ export class World {
     return this._pendingDestroy.length;
   }
 
-  // ------------------------------------------------------------------- components
 
   /**
    * Storage for a component type, created on first use.
@@ -387,7 +383,6 @@ export class World {
     return result;
   }
 
-  // ----------------------------------------------------------------------- queries
 
   /**
    * Build (or reuse) a query.
@@ -413,7 +408,6 @@ export class World {
     return /** @type {Query<C>} */ (cached);
   }
 
-  // --------------------------------------------------------------------- resources
 
   /**
    * @template T
@@ -449,7 +443,6 @@ export class World {
     return this.resources.get(key);
   }
 
-  // ----------------------------------------------------------------------- systems
 
   /**
    * Register a system.
@@ -480,7 +473,6 @@ export class World {
     this.scheduler.run(stage, this, dt);
   }
 
-  // ---------------------------------------------------------------------- teardown
 
   /**
    * Remove every entity and component, keeping systems and resources.

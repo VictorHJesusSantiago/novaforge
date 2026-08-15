@@ -74,9 +74,6 @@ export class Scheduler {
 
     const entry = {
       handle: this._nextHandle,
-      // Anonymous systems are the norm; falling back to the stage keeps the profiler readable.
-      // `||` rather than `??`: an arrow function passed inline has `name === ''`, not
-      // `undefined`, so nullish coalescing would let the empty string through.
       name: options.name || fn.name || `anonymous@${stage}`,
       fn,
       order: options.order ?? 0,
@@ -88,8 +85,6 @@ export class Scheduler {
     this._seq += 1;
 
     systems.push(entry);
-    // Sort on insert rather than on run: registration happens tens of times, running happens
-    // sixty times a second.
     systems.sort((a, b) => (a.order === b.order ? a.seq - b.seq : a.order - b.order));
     return entry.handle;
   }

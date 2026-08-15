@@ -75,14 +75,11 @@ export class Query {
    */
   *[Symbol.iterator]() {
     const world = this.world;
-    // Snapshot: this array is what makes mid-iteration mutation safe.
     const candidates = this._drivingStore().entityIndices();
     const stores = this.required.map((c) => world.store(c));
 
     for (let i = 0; i < candidates.length; i += 1) {
       const index = candidates[i];
-      // Re-check against the live world — the entity may have been destroyed, or lost one of
-      // the required components, since the snapshot was taken.
       if (!world.isAliveIndex(index)) continue;
       if (!this._matches(index)) continue;
 
@@ -120,7 +117,6 @@ export class Query {
       if (!this._matches(index)) continue;
 
       const entity = makeEntity(index, world.generationOf(index));
-      // Unrolled for the common arities; the general path allocates, the others do not.
       switch (arity) {
         case 1:
           callback(entity, stores[0].get(index));

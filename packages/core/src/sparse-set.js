@@ -43,8 +43,6 @@ export class SparseSet {
    */
   has(index) {
     const dense = this.sparse[index];
-    // The second half of this test is what makes the sparse array safe to leave dirty on
-    // delete: a stale sparse entry cannot survive it.
     return dense !== undefined && dense < this.dense.length && this.dense[dense] === index;
   }
 
