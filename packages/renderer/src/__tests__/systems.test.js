@@ -74,8 +74,6 @@ describe('spriteRenderSystem', () => {
     expect(drawList.at(0).scaleY).toBe(3);
   });
 
-  // The system must not touch a canvas, so it works with no DOM at all — which is exactly
-  // why this test file runs in Node.
   it('does nothing when no draw list resource is registered', () => {
     const bare = new World();
     bare.spawn([mod.Transform], [mod.Sprite]);
@@ -105,7 +103,6 @@ describe('render interpolation', () => {
     expect(drawList.at(0).x).toBeCloseTo(100);
   });
 
-  // The whole reason Transform carries two extra fields (ADR-0004).
   it('draws between the two at a fractional alpha', () => {
     spawnMoving(0, 100);
     mod.spriteRenderSystem(world, 0.25);
@@ -115,7 +112,6 @@ describe('render interpolation', () => {
   it('interpolates rotation through the shortest arc', () => {
     const e = world.spawn([mod.Transform], [mod.Sprite]);
     const transform = world.get(e, mod.Transform);
-    // 179 degrees to -179 degrees: a 2-degree move, not a 358-degree one.
     transform.previousRotation = (179 * Math.PI) / 180;
     transform.rotation = (-179 * Math.PI) / 180;
 
@@ -123,7 +119,7 @@ describe('render interpolation', () => {
 
     const drawn = drawList.at(0).rotation;
     const distance = Math.abs(drawn - transform.previousRotation);
-    expect(distance).toBeLessThan(Math.PI / 45); // under 4 degrees
+    expect(distance).toBeLessThan(Math.PI / 45);
   });
 });
 
@@ -149,7 +145,6 @@ describe('syncPreviousTransform', () => {
     expect(transform.previousPosition.x).toBe(0);
   });
 
-  // Registered at order -1000 so it lands before any gameplay system moves anything.
   it('is installed first in fixedUpdate', () => {
     mod.installRenderSystems(world);
     const first = world.scheduler.systemsIn('fixedUpdate')[0];
@@ -169,8 +164,6 @@ describe('shape and text systems', () => {
     expect(drawList.at(0).height).toBe(40);
   });
 
-  // A circle has one radius, so a non-uniform scale cannot be represented exactly; taking the
-  // larger axis stays conservative for culling.
   it('scales a circle by the larger axis', () => {
     const e = world.spawn([mod.Transform], [mod.ShapeCircle, { radius: 10 }]);
     world.get(e, mod.Transform).scale.set(3, 1);

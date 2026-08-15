@@ -81,7 +81,6 @@ describe('bounds and tile access', () => {
     expect(getTile(tilemap, 0, 0)).toBeNull();
   });
 
-  // A level editor painting near an edge should not crash the tool over an off-by-one drag.
   it('setTile out of bounds is a silent no-op', () => {
     const tilemap = grid();
     expect(() => setTile(tilemap, 99, 99, '0_0')).not.toThrow();
@@ -176,8 +175,6 @@ describe('tilemapRenderSystem', () => {
     expect(drawList.length).toBe(0);
   });
 
-  // The entire reason a tilemap exists rather than one entity per tile: a huge map costs the
-  // same per frame as a small one once culled to the camera.
   it('culls to the camera and draws far fewer commands than the map contains', () => {
     const entity = world.spawn([Transform], [Tilemap, { atlas: 'tiles' }]);
     const tilemap = world.get(entity, Tilemap);
@@ -198,7 +195,7 @@ describe('tilemapRenderSystem', () => {
 
     expect(drawList.length).toBeGreaterThan(0);
     expect(drawList.length).toBeLessThan(200 * 200);
-    expect(drawList.length).toBeLessThan(500); // a generous bound around the 320x240 viewport
+    expect(drawList.length).toBeLessThan(500);
   });
 
   it('still draws every tile when no camera is installed, as the degraded fallback', () => {

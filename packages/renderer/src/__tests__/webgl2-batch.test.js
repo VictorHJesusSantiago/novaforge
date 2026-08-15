@@ -43,7 +43,6 @@ describe('worldToClipMatrix', () => {
   it('tracks camera zoom', () => {
     const camera = new Camera2D({ viewportWidth: 800, viewportHeight: 600 });
     camera.zoom = 2;
-    // At 2x zoom, a point half a screen-width away lands at the clip-space edge.
     const clip = worldToClipMatrix(camera, 800, 600).transformPoint({ x: 200, y: 0 });
     expect(clip.x).toBeCloseTo(1, 5);
   });
@@ -59,7 +58,6 @@ describe('appendCommandVertices', () => {
   it('centres a quad on its anchor', () => {
     const out = [];
     appendCommandVertices(out, { kind: DrawKind.RECT, x: 100, y: 100, width: 20, height: 20, rotation: 0, anchorX: 0.5, anchorY: 0.5, tint: 0xffffff, alpha: 1 }, undefined);
-    // First vertex is the top-left corner: centred means it is offset by -half extents.
     expect(out[0]).toBeCloseTo(90);
     expect(out[1]).toBeCloseTo(90);
   });
@@ -74,7 +72,6 @@ describe('appendCommandVertices', () => {
   it('converts the packed tint into normalised float channels', () => {
     const out = [];
     appendCommandVertices(out, { kind: DrawKind.RECT, x: 0, y: 0, width: 1, height: 1, rotation: 0, anchorX: 0.5, anchorY: 0.5, tint: 0xff8000, alpha: 0.5 }, undefined);
-    // Vertex layout: x,y,u,v,r,g,b,a,shapeMode — color starts at index 4.
     expect(out[4]).toBeCloseTo(1, 5);
     expect(out[5]).toBeCloseTo(0x80 / 255, 3);
     expect(out[6]).toBeCloseTo(0, 5);
@@ -84,7 +81,6 @@ describe('appendCommandVertices', () => {
   it('marks a circle command with shapeMode 1', () => {
     const out = [];
     appendCommandVertices(out, { kind: DrawKind.CIRCLE, x: 0, y: 0, radius: 5, tint: 0xffffff, alpha: 1 }, undefined);
-    // shapeMode is the last of the 9 floats per vertex.
     for (let v = 0; v < VERTICES_PER_QUAD; v += 1) {
       expect(out[v * ATTRIBUTE_STRIDE + 8]).toBe(1);
     }
@@ -103,10 +99,8 @@ describe('appendCommandVertices', () => {
       { kind: DrawKind.SPRITE, x: 0, y: 0, width: 16, height: 16, scaleX: 1, scaleY: 1, rotation: 0, anchorX: 0, anchorY: 0, tint: 0xffffff, alpha: 1, sourceX: 32, sourceY: 0, sourceWidth: 16, sourceHeight: 16 },
       { width: 64, height: 64 },
     );
-    // Vertex 0 = top-left = (u0, v0).
     expect(out[2]).toBeCloseTo(32 / 64);
     expect(out[3]).toBeCloseTo(0 / 64);
-    // Vertex 1 = top-right = (u1, v0).
     expect(out[ATTRIBUTE_STRIDE + 2]).toBeCloseTo(48 / 64);
   });
 
@@ -121,7 +115,6 @@ describe('appendCommandVertices', () => {
     const out = [];
     appendCommandVertices(out, { kind: DrawKind.LINE, x: 0, y: 0, x2: 10, y2: 0, lineWidth: 2, tint: 0xffffff, alpha: 1 }, undefined);
     expect(out).toHaveLength(VERTICES_PER_QUAD * ATTRIBUTE_STRIDE);
-    // A horizontal line's quad corners should span roughly [0,10] in x and be thin in y.
     const xs = [];
     const ys = [];
     for (let v = 0; v < VERTICES_PER_QUAD; v += 1) {
@@ -132,8 +125,6 @@ describe('appendCommandVertices', () => {
     expect(Math.max(...ys) - Math.min(...ys)).toBeCloseTo(2, 3);
   });
 
-  // A zero-length line has no orientation to rasterise; it must not corrupt the buffer with
-  // NaN from a divide-by-zero direction.
   it('skips a zero-length line rather than producing NaN geometry', () => {
     const out = [];
     appendCommandVertices(out, { kind: DrawKind.LINE, x: 5, y: 5, x2: 5, y2: 5, lineWidth: 2, tint: 0xffffff, alpha: 1 }, undefined);
@@ -203,9 +194,6 @@ describe('groupByTexture', () => {
     expect(groupByTexture(new DrawList())).toHaveLength(0);
   });
 
-  // This is the property that makes one-draw-call-per-texture correct: interleaved textures
-  // (which a stable sort by (layer, z, textureId) never produces) would otherwise silently
-  // split into more runs than necessary. Asserting it here locks in the assumption.
   it('never re-groups an already-contiguous run, even across many textures', () => {
     const list = new DrawList();
     for (let i = 0; i < 5; i += 1) {
