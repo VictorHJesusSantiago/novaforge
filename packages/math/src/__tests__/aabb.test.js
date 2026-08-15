@@ -49,8 +49,6 @@ describe('AABB overlap', () => {
     expect(a.overlaps(b)).toBe(false);
   });
 
-  // The broadphase must be conservative: a false positive costs one narrowphase call,
-  // a false negative costs a missed collision.
   it('treats touching boxes as overlapping', () => {
     const a = new AABB(0, 0, 10, 10);
     const b = new AABB(10, 0, 20, 10);
@@ -112,8 +110,6 @@ describe('AABB raycast', () => {
     expect(box.raycast({ x: 15, y: 15 }, { x: 1, y: 0 })).toBe(0);
   });
 
-  // A zero component means the ray is parallel to that slab. Dividing would give
-  // Infinity/NaN, so the parallel case has to be handled explicitly.
   it('handles an axis-aligned ray parallel to a slab', () => {
     expect(box.raycast({ x: 15, y: 0 }, { x: 0, y: 1 })).toBeCloseTo(10);
     expect(box.raycast({ x: 100, y: 0 }, { x: 0, y: 1 })).toBeNull();

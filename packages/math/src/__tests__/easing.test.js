@@ -4,8 +4,6 @@ import * as easing from '../easing.js';
 const CURVES = Object.entries(easing.byName);
 
 describe('easing contract', () => {
-  // Every curve must be an identity at the endpoints, otherwise an animation snaps on the
-  // first and last frame.
   it.each(CURVES)('%s maps 0 to 0 and 1 to 1', (_name, fn) => {
     expect(fn(0)).toBeCloseTo(0, 5);
     expect(fn(1)).toBeCloseTo(1, 5);
@@ -77,7 +75,6 @@ describe('easing resolution by name', () => {
     expect(easing.resolve('cubicOut')).toBe(easing.cubicOut);
   });
 
-  // A typo in a serialised animation should degrade, not crash the animation system.
   it('falls back to linear for an unknown name', () => {
     expect(easing.resolve('does-not-exist')).toBe(easing.linear);
   });

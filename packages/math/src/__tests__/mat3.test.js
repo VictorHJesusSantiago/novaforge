@@ -15,7 +15,6 @@ describe('Mat3 basics', () => {
     expect(p.y).toBe(22);
   });
 
-  // The distinction that causes bugs when it is missed: normals must not be translated.
   it('ignores translation when transforming a direction', () => {
     const v = Mat3.translation(10, 20).transformVector(new Vec2(1, 0));
     expect(v.x).toBeCloseTo(1);
@@ -45,7 +44,6 @@ describe('Mat3 composition', () => {
   });
 
   it('multiply applies the right-hand matrix first', () => {
-    // Scale then translate: the translation must not be scaled.
     const m = Mat3.translation(100, 0).multiply(Mat3.scaling(2, 2));
     const p = m.transformPoint(new Vec2(1, 0));
     expect(p.x).toBeCloseTo(102);
@@ -64,8 +62,6 @@ describe('Mat3 inverse', () => {
     expect(back.y).toBeCloseTo(original.y, 4);
   });
 
-  // Returning identity here would place editor click-to-world at the wrong position with no
-  // visible error, so the null must be explicit.
   it('returns null for a singular matrix instead of a wrong answer', () => {
     expect(Mat3.scaling(0, 0).inverse()).toBeNull();
     expect(Mat3.scaling(1, 0).inverse()).toBeNull();
@@ -89,8 +85,6 @@ describe('Mat3 decompose', () => {
 });
 
 describe('Mat3 storage layout', () => {
-  // Column-major with the bottom row present is what lets the WebGL2 backend upload `m`
-  // straight to uniformMatrix3fv with no repacking. Locking it down with a test.
   it('is a 9-element Float32Array in column-major order', () => {
     const m = Mat3.translation(5, 6);
     expect(m.m).toBeInstanceOf(Float32Array);
