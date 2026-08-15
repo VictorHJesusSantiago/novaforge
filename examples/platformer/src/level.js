@@ -46,22 +46,13 @@ function fillRect(grid, column, row, width, height, value) {
 
 const grid = makeGrid(COLUMNS, ROWS);
 
-// The floor, in two segments with a three-tile gap between them (columns 14-16) that cannot be
-// walked across — the player has to jump it.
 fillRect(grid, 0, 12, 14, 2, TILE_GROUND);
 fillRect(grid, 17, 12, 23, 2, TILE_GROUND);
 
-// A low stepping platform near the start — reachable with a short hop, and its left face is
-// used by the gameplay test to prove a solid tile actually stops horizontal movement.
 fillRect(grid, 4, 9, 4, 1, TILE_GROUND);
 
-// A higher platform past the gap. Purely a change of scenery — optional, not on the critical
-// path to the goal — but it is what makes this "platforms at different heights" rather than a
-// flat floor with one obstacle.
 fillRect(grid, 26, 7, 4, 1, TILE_GROUND);
 
-// The rise leading up to the goal: two tiles taller than the floor, so reaching the goal needs
-// one more jump after crossing the gap.
 fillRect(grid, 34, 10, 6, 4, TILE_GROUND);
 
 /** The finished level, ready for `factories.js` to read. */

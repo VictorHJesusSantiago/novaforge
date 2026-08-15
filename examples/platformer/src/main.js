@@ -72,7 +72,6 @@ game.use((instance) => {
   return () => instance.world.removeSystem(handle);
 });
 
-// Browsers keep the audio context suspended until the user interacts with the page.
 const resumeAudio = () => {
   void game.audio.resume();
   window.removeEventListener('pointerdown', resumeAudio);
@@ -81,7 +80,6 @@ const resumeAudio = () => {
 window.addEventListener('pointerdown', resumeAudio);
 window.addEventListener('keydown', resumeAudio);
 
-// Pause when the tab is hidden — see `examples/breakout`'s `main.js` for why.
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) game.pause();
   else game.resume();

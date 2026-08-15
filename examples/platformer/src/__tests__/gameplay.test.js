@@ -29,7 +29,7 @@ beforeEach(async () => {
   await game.scenes.change('play');
 
   now = 0;
-  game.frame(now); // prime the clock
+  game.frame(now);
 });
 
 afterEach(async () => {
@@ -95,9 +95,6 @@ describe('level setup', () => {
     expect(game.world.query([Coin]).count()).toBe(COIN_POSITIONS.length);
   });
 
-  // The interesting assertion in this file for the tilemap collider generation: far fewer
-  // colliders than solid tiles, proving the row-run merge actually merged something rather than
-  // emitting one box per cell.
   it('merges contiguous solid tiles into far fewer ground colliders than there are tiles', () => {
     let groundColliders = 0;
     game.world.query([Collider]).each((_entity, collider) => {
@@ -123,11 +120,7 @@ describe('movement', () => {
     expect(playerTuple()[1].position.x).toBeLessThan(startX);
   });
 
-  // The bug this guards against is a player tunnelling through a wall, or the solver failing to
-  // stop lateral motion once contact begins.
   it('stops horizontal movement when walking into a solid tile', () => {
-    // The goal rise (level.js, columns 34-39) has a flush vertical face at x = 34 * 32 = 1088.
-    // Start well clear of it, at floor height, and run straight into it.
     const [, transform, body] = playerTuple();
     transform.position.set(900, PLAYER_START.y);
     transform.previousPosition.copyFrom(transform.position);
@@ -137,14 +130,9 @@ describe('movement', () => {
     advance(90);
 
     const stoppedAt = playerTuple()[1].position.x;
-    // Unobstructed at `moveSpeed` for 1.5s the player would reach ~1230; resting against the
-    // wall's face (1088) with a little solver slop is nowhere near that, and nowhere near the
-    // far side of the six-tile-wide wall (1280) either — either bound would mean it tunnelled.
     expect(stoppedAt).toBeLessThan(1088 + 20);
     expect(stoppedAt).toBeGreaterThan(1088 - PLAYER.width);
 
-    // Confirm it is actually resting against the wall, not merely slow: continuing to hold the
-    // same input for many more frames should not advance it meaningfully further.
     advance(60);
     expect(playerTuple()[1].position.x).toBeLessThan(stoppedAt + 5);
   });
@@ -157,9 +145,8 @@ describe('jumping', () => {
   });
 
   it('gains upward velocity on the jump action while grounded', () => {
-    advance(5); // settle onto the floor first
+    advance(5);
     tap('Space');
-    // In screen space -y is up (Vec2.up()) — a jump is a negative y velocity.
     expect(playerTuple()[2].velocity.y).toBeLessThan(0);
   });
 
@@ -171,32 +158,21 @@ describe('jumping', () => {
     const [, transform, body, state] = playerTuple();
     expect(state.grounded).toBe(true);
     expect(Math.abs(body.velocity.y)).toBeLessThan(1);
-    // A resting dynamic body under constant gravity settles a couple of pixels into the
-    // ground — each step's positional correction only removes a fraction of that step's
-    // penetration (`resolver.js`'s `applyPositionalCorrection`), so gravity and correction
-    // reach equilibrium slightly below the surface rather than exactly on it. What matters
-    // here is that the player came back down onto the floor, not through it.
     expect(Math.abs(transform.position.y - PLAYER_START.y)).toBeLessThan(5);
   });
 
-  // The bug this guards against: `groundCheckSystem`'s one-step-stale broadphase read still
-  // showing "touching ground" the instant after `playerControlSystem` already granted the jump,
-  // which would let a second `jump` press one frame later grant a free second jump mid-air.
   it('does not grant a second jump from a held or repeated jump press while airborne', () => {
     advance(5);
     tap('Space');
     const afterFirstJump = playerTuple()[2].velocity.y;
     expect(afterFirstJump).toBeLessThan(0);
 
-    advance(3); // still well short of landing
+    advance(3);
     expect(playerTuple()[3].grounded).toBe(false);
 
-    tap('Space'); // a second, illegitimate press while airborne
+    tap('Space');
     const afterSecondPress = playerTuple()[2].velocity.y;
 
-    // A genuine second jump would reset velocity close to -PLAYER.jumpSpeed again. Gravity has
-    // only been acting for a handful of frames, so the honest trajectory is still well short of
-    // that — anything near -jumpSpeed again means the guard failed.
     expect(afterSecondPress).toBeGreaterThan(-PLAYER.jumpSpeed + 50);
   });
 });
@@ -222,12 +198,11 @@ describe('hazards', () => {
     const session = game.world.getResource(SESSION);
     const [, transform, body] = playerTuple();
 
-    // Column 15 sits inside the three-tile gap (columns 14-16) with nothing solid below it.
     transform.position.set(15 * 32 + 16, 200);
     transform.previousPosition.copyFrom(transform.position);
     body.velocity.set(0, 0);
 
-    advance(150); // long enough to fall clear through the level and into the hazard trigger
+    advance(150);
 
     expect(session.lives).toBe(RULES.lives - 1);
     const [, respawned] = playerTuple();
@@ -289,18 +264,12 @@ describe('goal', () => {
 
 describe('animation state machine', () => {
   it('settles into the idle state once grounded and at rest', () => {
-    // `createPlayer` calls `enterStateMachine` synchronously, so the controller starts in
-    // `idle` before a single system has run — but the very first `groundCheckSystem` pass
-    // reads a broadphase tree that has not been built yet (no `physicsStep` has run), so the
-    // machine legitimately passes through `jump` for a frame before landing. That one-step
-    // cold start is the same lag the `jumping` tests' "grounded at rest" case exercises, and
-    // is exactly why this asserts on the settled state rather than the very first frame.
     advance(5);
     expect(playerAnimation().current).toBe('idle');
   });
 
   it('transitions to run while moving on the ground', () => {
-    advance(5); // settle
+    advance(5);
     game.input.pushKeyDown('ArrowRight');
     advance(15);
 
@@ -357,7 +326,7 @@ describe('pausing', () => {
 
   it('freezes the simulation while paused', async () => {
     advance(5);
-    tap('Space'); // send the player airborne so a frozen clock is actually observable
+    tap('Space');
     advance(5);
 
     tap('Escape');
@@ -372,7 +341,7 @@ describe('pausing', () => {
 
   it('resumes the simulation on pop', async () => {
     advance(5);
-    tap('Space'); // airborne, so gravity has visible work left to do after resuming
+    tap('Space');
     tap('Escape');
     await Promise.resolve();
     advance(2);
