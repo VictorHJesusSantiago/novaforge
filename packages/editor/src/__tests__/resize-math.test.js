@@ -18,8 +18,6 @@ describe('resizedSize', () => {
     expect(resizedSize(200, 5000, 0, 1000)).toBe(1000);
   });
 
-  // The trailing-edge panel case: dragging right (positive delta) should shrink a panel
-  // anchored to the right side of the splitter, not grow it.
   it('inverts the delta sign when invert is true', () => {
     expect(resizedSize(200, 50, 0, 1000, true)).toBe(150);
     expect(resizedSize(200, -50, 0, 1000, true)).toBe(250);

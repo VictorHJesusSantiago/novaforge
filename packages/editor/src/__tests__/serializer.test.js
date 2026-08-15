@@ -99,8 +99,6 @@ describe('entity round trip', () => {
     expect(world.has(restored, Frozen)).toBe(true);
   });
 
-  // Invariant E1: a destroyed and recreated entity is a new handle. The serialiser cannot and
-  // must not fake identity preservation across a save/load round trip.
   it('produces a different entity handle than the original', () => {
     const entity = world.spawn([Position]);
     const snapshot = serializeEntity(world, entity);

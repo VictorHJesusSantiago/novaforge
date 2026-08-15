@@ -12,9 +12,6 @@ import { SceneTree } from '../scene-tree.js';
 /** @type {SceneTree} */ let tree;
 
 beforeEach(() => {
-  // No resetComponentRegistry() here: this file only uses `Name`, a real core component that
-  // SceneTree resolves by name through the shared registry — clearing that registry would
-  // remove Name's own entry along with it and break the name-lookup path being tested.
   world = new World();
   selection = new Selection();
   stack = new CommandStack();
@@ -215,9 +212,6 @@ describe('drag-and-drop reparenting', () => {
     setParent(world, child, parent);
     tree.refresh();
 
-    // Dispatched directly on the list element itself (not a row), so `event.target` is
-    // naturally the list — exactly the "dropped on empty background" case the handler checks
-    // for via `event.target !== list`.
     const list = /** @type {HTMLElement} */ (container.querySelector('.nf-scene-tree__list'));
     list.dispatchEvent(dragEvent('drop', String(child)));
 

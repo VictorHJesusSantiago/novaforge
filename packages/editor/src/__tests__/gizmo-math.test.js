@@ -88,7 +88,6 @@ describe('scaleFromDrag', () => {
     expect(scale.y).toBeCloseTo(8);
   });
 
-  // Dragging through the centre and out the other side must not invert or zero the scale.
   it('floors at minScale instead of going to zero or negative', () => {
     const scale = scaleFromDrag({ x: 0, y: 0 }, { x: 0, y: 0 }, 10, { x: 1, y: 1 });
     expect(scale.x).toBeGreaterThan(0);
@@ -127,17 +126,15 @@ describe('snapPoint', () => {
 
 describe('snapAngle', () => {
   it('snaps to the nearest step in radians', () => {
-    const step = Math.PI / 12; // 15 degrees
+    const step = Math.PI / 12;
     const snapped = snapAngle((17 * Math.PI) / 180, step);
-    expect(snapped).toBeCloseTo(Math.PI / 12); // rounds to 15deg
+    expect(snapped).toBeCloseTo(Math.PI / 12);
   });
 
   it('leaves the angle unchanged when disabled', () => {
     expect(snapAngle(1.2345, 0)).toBe(1.2345);
   });
 
-  // Without wrapping, 179deg and -179deg — the same direction — would snap toward opposite
-  // extremes instead of agreeing.
   it('wraps the result into (-PI, PI]', () => {
     const step = Math.PI / 12;
     const snapped = snapAngle(Math.PI * 3, step);
