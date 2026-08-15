@@ -57,9 +57,6 @@ describe('starts in edit mode', () => {
     game.world.get(entity, Transform)?.position.set(999, 999);
     editor.frame(16);
 
-    // Not asserting on pixels (there is no renderer without a canvas) — asserting that the
-    // frame ran the render stage at all by checking the draw list was rebuilt without throwing,
-    // and that the edit is still exactly where it was set (nothing simulated it away).
     expect(game.world.get(entity, Transform)?.position.x).toBe(999);
   });
 });
@@ -86,7 +83,7 @@ describe('play', () => {
     editor.frame(0);
     editor.play();
     const modeAfterFirstPlay = editor.mode;
-    editor.play(); // calling play again while already playing must not re-snapshot or throw
+    editor.play();
     expect(editor.mode).toBe(modeAfterFirstPlay);
   });
 });
@@ -108,8 +105,6 @@ describe('stop', () => {
 
     editor.stop();
 
-    // The entity handle itself may differ (scene reload recreates entities), but exactly one
-    // entity should exist again, back at the original position.
     const survivors = game.world.entities();
     expect(survivors).toHaveLength(1);
     expect(game.world.get(survivors[0], Transform)?.position.y).toBe(0);
@@ -166,7 +161,7 @@ describe('step', () => {
 
     const expectedVelocity = game.physics?.gravity.y ?? 0;
     expect(game.world.get(entity, Transform)?.position.y).toBeGreaterThan(0);
-    expect(game.world.get(entity, Transform)?.position.y).toBeLessThan(expectedVelocity); // sanity: one step, not many
+    expect(game.world.get(entity, Transform)?.position.y).toBeLessThan(expectedVelocity);
   });
 
   it('does nothing in play mode', () => {
@@ -206,7 +201,7 @@ describe('save and load', () => {
     spawnFallingBody(game);
     const text = editor.save();
 
-    spawnFallingBody(game); // a second entity, not part of the saved text
+    spawnFallingBody(game);
     editor.load(text);
 
     expect(game.world.entities()).toHaveLength(1);

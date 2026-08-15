@@ -28,11 +28,6 @@ import {
 
 beforeEach(() => {
   resetComponentRegistry();
-  // `Parent` is a real core singleton, registered once at module import — long before this
-  // reset — so the reset silently un-registers its *name* (though the object itself, and
-  // hierarchy.js's own closures over it, are untouched). The cascading-delete tests below
-  // round-trip a `Parent` component through the serialiser, which resolves it by name via
-  // `getComponentType`, so it has to be re-registered for this file's registry state.
   registerComponentType(Parent);
   Position = defineComponent(
     'Position',
@@ -58,13 +53,11 @@ describe('setFieldCommand', () => {
     expect(world.get(entity, Position)?.point).toEqual(new Vec2(1, 1));
   });
 
-  // The drag-gizmo case: the field was already mutated live before the command was built, so
-  // "old" has to be whatever the caller captured before the drag started, not the current value.
   it('supports being built after the field was already changed live', () => {
     const entity = world.spawn([Position]);
     const before = new Vec2(0, 0);
     const live = world.get(entity, Position);
-    if (live) live.point.set(50, 50); // simulates a live drag already in progress
+    if (live) live.point.set(50, 50);
 
     stack.execute(setFieldCommand(world, entity, Position, 'point', before, new Vec2(50, 50)));
     stack.undo();
@@ -143,8 +136,6 @@ describe('createEntityCommand / deleteEntityCommand', () => {
     expect(world.get(restored, Position)?.point).toEqual(new Vec2(3, 4));
   });
 
-  // Invariant E1: the restored entity is necessarily a new handle. Any caller tracking
-  // selection across this undo must read it back via entity().
   it('mints a new handle on undo rather than reviving the old one', () => {
     const entity = world.spawn([Position]);
     const command = deleteEntityCommand(world, entity);
@@ -218,13 +209,13 @@ describe('deleteEntityCommand cascades to the whole subtree', () => {
   });
 
   it('does not remap a Parent that pointed outside the deleted subtree', () => {
-    const grandparent = world.createEntity(); // survives, never deleted
+    const grandparent = world.createEntity();
     const parent = world.spawn([Position]);
     setParent(world, parent, grandparent);
     const child = world.createEntity();
     setParent(world, child, parent);
 
-    const command = deleteEntityCommand(world, parent); // deletes parent + child, not grandparent
+    const command = deleteEntityCommand(world, parent);
     stack.execute(command);
     stack.undo();
 

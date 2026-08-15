@@ -25,7 +25,6 @@ describe('execute', () => {
     expect(stack.canUndo).toBe(true);
   });
 
-  // The standard editor convention: a new edit invalidates whatever was undone before it.
   it('clears the redo stack on a new command', () => {
     const stack = new CommandStack();
     const log = [];
@@ -94,7 +93,6 @@ describe('bounded history', () => {
 
     stack.undo();
     stack.undo();
-    // 'a' should have been dropped, so a third undo does nothing.
     expect(stack.undo()).toBe(false);
     expect(log.filter((l) => l.startsWith('undo'))).toEqual(['undo:c', 'undo:b']);
   });
@@ -109,7 +107,7 @@ describe('clear', () => {
 
     expect(stack.canUndo).toBe(false);
     expect(stack.canRedo).toBe(false);
-    expect(log).toEqual(['do:a']); // no undo:a
+    expect(log).toEqual(['do:a']);
   });
 });
 

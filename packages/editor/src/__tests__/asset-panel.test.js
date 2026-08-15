@@ -67,8 +67,6 @@ describe('loadFile', () => {
     expect(createObjectURL).toHaveBeenCalledTimes(1);
   });
 
-  // The whole hot-reload story: loading the same id again overwrites the resident texture, and
-  // every sprite already referencing that id picks it up with no other code involved.
   it('reloading the same id overwrites the resident texture', async () => {
     const textures = new TextureCache();
     const panel = new AssetPanel(document.createElement('div'), textures);
