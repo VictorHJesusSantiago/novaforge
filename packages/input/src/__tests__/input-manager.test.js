@@ -9,8 +9,6 @@ beforeEach(() => {
 });
 
 describe('keyboard state', () => {
-  // Device events do not become readable until update() runs. That is what gives every system
-  // in a frame the same snapshot (Invariant I1).
   it('does not expose a key until the frame is updated', () => {
     input.pushKeyDown('Space');
     expect(input.isKeyDown('Space')).toBe(false);
@@ -67,7 +65,6 @@ describe('edge detection', () => {
     expect(input.keyReleased('Space')).toBe(false);
   });
 
-  // A system running several times in one frame (fixedUpdate) must see a stable edge.
   it('keeps the edge stable for every read within a frame', () => {
     input.pushKeyDown('Space');
     input.update();
@@ -119,7 +116,6 @@ describe('mouse', () => {
     expect(input.mouse.deltaY).toBe(-10);
   });
 
-  // Wheel is a per-frame accumulator, not a level.
   it('accumulates wheel movement within a frame and resets after', () => {
     input.pushWheel(1);
     input.pushWheel(1);
@@ -131,8 +127,6 @@ describe('mouse', () => {
     expect(input.mouse.wheel).toBe(0);
   });
 
-  // The browser does not report a mouseup that happens outside the element, and a stuck
-  // button is worse than a missed one.
   it('releases held buttons when the pointer leaves', () => {
     input.pushMouseDown(MouseButton.LEFT);
     input.update();
@@ -156,8 +150,6 @@ describe('gamepad', () => {
     expect(input.gamepadButtonReleased(0)).toBe(true);
   });
 
-  // Analogue sticks do not return exactly to centre; without a dead zone a character drifts
-  // on an untouched controller.
   it('zeroes axis noise inside the dead zone', () => {
     input.pushGamepadState([0.05, -0.1], []);
     input.update();
@@ -187,8 +179,6 @@ describe('gamepad', () => {
 });
 
 describe('releaseAll', () => {
-  // Keys held when the tab loses focus never report a keyup; without this the player returns
-  // to a game that thinks they are still holding right.
   it('drops every held input', () => {
     input.pushKeyDown('KeyD');
     input.pushMouseDown(MouseButton.LEFT);
@@ -213,8 +203,6 @@ describe('releaseAll', () => {
 });
 
 describe('headless operation', () => {
-  // The whole class works with no DOM, which is what makes input replay and this test file
-  // possible at all.
   it('constructs and runs with no DOM present', () => {
     expect(() => {
       const manager = new InputManager();

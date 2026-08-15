@@ -102,7 +102,6 @@ describe('axes', () => {
     expect(actions.axis('moveX')).toBe(-1);
   });
 
-  // Holding both directions should stand still, not double up or oscillate.
   it('cancels when both directions are held', () => {
     input.pushKeyDown('KeyA');
     input.pushKeyDown('KeyD');
@@ -133,7 +132,6 @@ describe('axes', () => {
     expect(actions.axis('moveX')).toBe(-1);
   });
 
-  // A missing axis should make the character stand still, not crash the frame.
   it('returns 0 for an undefined axis', () => {
     expect(actions.axis('nope')).toBe(0);
   });
@@ -151,8 +149,6 @@ describe('vector', () => {
     expect(actions.vector('moveX', 'moveY')).toEqual({ x: 1, y: 0 });
   });
 
-  // Without normalising, a player holding two directions moves 1.41x faster diagonally — the
-  // single most common movement bug in 2D games.
   it('normalises the diagonal to unit length', () => {
     input.pushKeyDown('KeyD');
     input.pushKeyDown('KeyS');
