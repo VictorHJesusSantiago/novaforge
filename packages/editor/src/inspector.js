@@ -274,8 +274,6 @@ export class Inspector {
       case 'entity':
       case 'opaque':
       default: {
-        // Not editable through a generic control. Rendered read-only rather than omitted, so
-        // the inspector never silently hides data a scene actually has.
         const span = document.createElement('span');
         span.className = 'nf-inspector__readonly';
         span.textContent = JSON.stringify(value[field]);

@@ -41,7 +41,6 @@ export function rotateHandlePosition(position, rotation, distance = ROTATE_HANDL
  * @returns {Vec2}
  */
 export function scaleHandlePosition(position, rotation, scale, distance = SCALE_HANDLE_DISTANCE) {
-  // A fixed local direction (1, 1), rotated by the entity and scaled by its current magnitude.
   const magnitude = (Math.abs(scale.x) + Math.abs(scale.y)) / 2;
   const local = new Vec2(1, 1).normalizeSelf().scaleSelf(distance * Math.max(magnitude, 0.05));
   return Vec2.from(position).addSelf(local.rotate(rotation));
