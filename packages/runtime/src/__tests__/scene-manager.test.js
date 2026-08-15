@@ -57,14 +57,12 @@ describe('change', () => {
     expect(scenes.active?.name).toBe('level');
   });
 
-  // A typo'd scene name is a programming error and should say so, naming the alternatives.
   it('throws for an unregistered scene and lists what is known', async () => {
     await expect(scenes.change('nope')).rejects.toThrow(/level/);
   });
 });
 
 describe('push and pop', () => {
-  // The pause-menu requirement: the level must survive underneath, entities and all.
   it('pauses the scene below rather than tearing it down', async () => {
     await scenes.change('level');
     await scenes.push('menu');
@@ -110,8 +108,6 @@ describe('teardown', () => {
     scenes.register('populated', Populated);
   });
 
-  // Leaked systems from a previous scene make the game behave as though two levels are
-  // running at once, because they are.
   it('unregisters the systems a scene registered', async () => {
     await scenes.change('populated');
     expect(world.scheduler.size).toBe(2);
@@ -158,9 +154,6 @@ describe('transition guarding', () => {
     scenes.register('slow', Slow);
   });
 
-  // Scene changes are async because of preloading; two interleaved teardowns would corrupt
-  // the stack. The guard surfaces as a rejection rather than a synchronous throw, because
-  // `change` is async and a caller should only ever have to handle one failure channel.
   it('rejects a second transition while one is in flight', async () => {
     const first = scenes.change('slow');
     await expect(scenes.change('level')).rejects.toThrow(/already running/);

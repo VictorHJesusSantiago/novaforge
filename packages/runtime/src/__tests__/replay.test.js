@@ -50,9 +50,6 @@ function drive(game, tape, frames, onFrame) {
     now += 1000 / 60;
 
     if (tape instanceof ReplayRecorder) {
-      // recordFrame() must advance the frame counter *before* this iteration's scripted input
-      // is pushed, so the event is tagged with the frame it belongs to — the same frame number
-      // ReplayPlayer.nextFrame() will have advanced to when it later replays that same event.
       tape.recordFrame(now);
       onFrame?.(i, game);
       game.frame(now);
