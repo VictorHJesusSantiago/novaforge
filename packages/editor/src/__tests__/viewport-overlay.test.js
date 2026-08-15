@@ -38,8 +38,6 @@ beforeEach(() => {
 });
 
 describe('construction in a context-less environment', () => {
-  // jsdom has no real 2D canvas backend; getContext('2d') returns null. Picking and dragging
-  // must still work, and render() must not throw — only drawing degrades.
   it('does not throw when constructed or rendered with no 2D context', () => {
     expect(() => overlay.render()).not.toThrow();
   });
@@ -112,8 +110,6 @@ describe('dragging', () => {
     const position = world.get(entity, Transform)?.position;
     expect(position?.x).toBeCloseTo(3, 3);
     expect(position?.y).toBeCloseTo(4, 3);
-    // A real Vec2 exposes .set(); a plain {x,y} lookalike would not, and something calling it
-    // later would throw far from this test.
     expect(typeof position?.set).toBe('function');
   });
 
@@ -134,8 +130,6 @@ describe('dragging', () => {
     expect(world.get(entity, Transform)?.position.x).toBeCloseTo(100, 3);
   });
 
-  // A click that starts and ends on the handle with no movement must not push a no-op onto
-  // the undo stack.
   it('does not record a command for a click with no movement', () => {
     const entity = world.spawn([Transform]);
     world.get(entity, Transform)?.position.set(0, 0);
@@ -169,10 +163,10 @@ describe('rotate gizmo', () => {
     selection.select(entity);
     overlay.gizmoMode = 'rotate';
 
-    const handleScreen = camera.worldToScreen({ x: 50, y: 0 }); // rotate handle at rotation 0
+    const handleScreen = camera.worldToScreen({ x: 50, y: 0 });
     canvas.dispatchEvent(pointerEvent('pointerdown', handleScreen.x, handleScreen.y));
 
-    const target = camera.worldToScreen({ x: 0, y: 50 }); // drag to "straight down"
+    const target = camera.worldToScreen({ x: 0, y: 50 });
     canvas.dispatchEvent(pointerEvent('pointermove', target.x, target.y));
 
     expect(world.get(entity, Transform)?.rotation).toBeCloseTo(Math.PI / 2, 2);
@@ -204,7 +198,6 @@ describe('rotate gizmo', () => {
 
     const handleScreen = camera.worldToScreen({ x: 50, y: 0 });
     canvas.dispatchEvent(pointerEvent('pointerdown', handleScreen.x, handleScreen.y));
-    // Drag to roughly 40 degrees — should snap to 45.
     const target = camera.worldToScreen({ x: Math.cos(0.7), y: Math.sin(0.7) });
     canvas.dispatchEvent(pointerEvent('pointermove', target.x, target.y));
 
@@ -235,7 +228,6 @@ describe('scale gizmo', () => {
     selection.select(entity);
     overlay.gizmoMode = 'scale';
 
-    // Scale handle at scale 1 sits at distance 40 along the (1,1) direction from centre.
     const direction = { x: Math.SQRT1_2, y: Math.SQRT1_2 };
     const handleWorld = { x: direction.x * 40, y: direction.y * 40 };
     const handleScreen = camera.worldToScreen(handleWorld);
@@ -324,15 +316,11 @@ describe('mode switching', () => {
     selection.select(entity);
     overlay.gizmoMode = 'rotate';
 
-    // The translate-mode handle sits at the entity centre; in rotate mode the handle has moved
-    // away, so a click at the old (translate) position must not start a drag.
     const centerScreen = camera.worldToScreen({ x: 0, y: 0 });
     canvas.dispatchEvent(pointerEvent('pointerdown', centerScreen.x, centerScreen.y));
     const target = camera.worldToScreen({ x: 0, y: 100 });
     canvas.dispatchEvent(pointerEvent('pointermove', target.x, target.y));
 
-    // No drag started: the entity's transform is untouched, and instead the click re-picked
-    // (found nothing else nearby, so it cleared the selection).
     expect(world.get(entity, Transform)?.rotation).toBe(0);
   });
 });

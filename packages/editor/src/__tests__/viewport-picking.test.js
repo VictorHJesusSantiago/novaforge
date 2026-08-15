@@ -64,7 +64,7 @@ describe('pickEntity', () => {
     world.get(entity, Transform)?.position.set(50, 0);
 
     const cam = camera();
-    cam.zoom = 4; // 50 world units is 200 screen pixels at this zoom
+    cam.zoom = 4;
     const screen = cam.worldToScreen({ x: 0, y: 0 });
     expect(pickEntity(world, cam, world.entities(), screen, 24)).toBeNull();
   });

@@ -143,7 +143,7 @@ describe('capturing a keyframe', () => {
     const entity = world.spawn([Widget], [TimelinePlayer]);
     const player = world.get(entity, TimelinePlayer);
     play(player, timeline);
-    player.time = 5; // away from the existing keyframe at 0, so this adds rather than overwrites
+    player.time = 5;
     selection.select(entity);
 
     const addButton = /** @type {HTMLButtonElement} */ (container.querySelector('.nf-timeline__add-keyframe'));
@@ -154,8 +154,6 @@ describe('capturing a keyframe', () => {
     expect(track.keyframes).toHaveLength(1);
   });
 
-  // The whole reason capture deep-copies: a later live mutation of the component's Vec2 must
-  // not silently corrupt a keyframe that already captured "the value at this instant".
   it('captures a vec2 field as an independent copy, not a live reference', () => {
     const track = defineTrack(Widget, 'point', [{ time: 0, value: new Vec2(0, 0) }]);
     const timeline = defineTimeline('t', [track]);
@@ -169,7 +167,7 @@ describe('capturing a keyframe', () => {
     const addButton = /** @type {HTMLButtonElement} */ (container.querySelector('.nf-timeline__add-keyframe'));
     addButton.click();
 
-    widget.point.set(999, 999); // mutate the live component after capturing
+    widget.point.set(999, 999);
 
     const captured = track.keyframes.find((k) => k.time === 2)?.value;
     expect(captured.x).toBe(3);
