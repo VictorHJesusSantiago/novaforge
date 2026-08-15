@@ -8,8 +8,6 @@ describe('symmetric filtering', () => {
     expect(canCollide(player, enemy)).toBe(true);
   });
 
-  // Invariant P1. Asymmetric filtering produces a collision that registers for one body's
-  // callbacks but not the other's — a bullet that damages an enemy it visibly passes through.
   it('does not collide when only one side is interested', () => {
     const player = { layer: Layers.PLAYER, mask: Layers.ENEMY };
     const enemy = { layer: Layers.ENEMY, mask: Layers.TERRAIN };
@@ -49,7 +47,7 @@ describe('layer bits', () => {
     const bits = named.map(([, bit]) => bit);
     expect(new Set(bits).size).toBe(bits.length);
     for (const bit of bits) {
-      expect(bit & (bit - 1)).toBe(0); // exactly one bit set
+      expect(bit & (bit - 1)).toBe(0);
     }
   });
 
@@ -71,8 +69,6 @@ describe('layerFromNames', () => {
     expect(layerFromNames([])).toBe(0);
   });
 
-  // A typo would silently produce a mask of 0, and a collider that hits nothing looks exactly
-  // like a physics bug rather than a configuration one.
   it('throws on an unknown layer name', () => {
     expect(() => layerFromNames(['NOT_A_LAYER'])).toThrow(/NOT_A_LAYER/);
   });

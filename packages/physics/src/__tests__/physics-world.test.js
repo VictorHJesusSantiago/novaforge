@@ -94,8 +94,6 @@ describe('integration', () => {
     expect(world.get(e, RigidBody)?.velocity.x).toBeCloseTo(afterOne, 5);
   });
 
-  // Exponential decay rather than subtraction, so damping cannot push a body backwards and
-  // does not depend on the step size.
   it('damps velocity without reversing it', () => {
     const e = spawnBody({ gravityScale: 0 });
     const body = world.get(e, RigidBody);
@@ -129,13 +127,10 @@ describe('resting contacts', () => {
     run(180);
 
     const y = world.get(falling, Transform)?.position.y ?? 0;
-    // Ground top is at 180; the box half-height is 10, so it rests near y = 170.
     expect(y).toBeGreaterThan(160);
     expect(y).toBeLessThan(180);
   });
 
-  // Impulses fix velocity, not position; without positional correction a resting body sinks
-  // through the floor a little more every step.
   it('does not sink through the ground over a long rest', () => {
     spawnBody({ x: 0, y: 200, shape: box(400, 40), type: BodyType.STATIC });
     const resting = spawnBody({ x: 0, y: 150, shape: box(20, 20) });
@@ -166,11 +161,9 @@ describe('resting contacts', () => {
     const lowerY = world.get(lower, Transform)?.position.y ?? 0;
     const upperY = world.get(upper, Transform)?.position.y ?? 0;
     expect(upperY).toBeLessThan(lowerY);
-    expect(lowerY - upperY).toBeGreaterThan(15); // still roughly one box apart
+    expect(lowerY - upperY).toBeGreaterThan(15);
   });
 
-  // Restitution is the *minimum* of the two bodies', so the ground has to be bouncy too —
-  // a bouncy ball on a dead floor does not bounce, which is the physically right answer.
   it('bounces a restitutive body back up', () => {
     spawnBody({ x: 0, y: 200, shape: box(400, 40), type: BodyType.STATIC, restitution: 0.9 });
     const ball = spawnBody({ x: 0, y: 0, shape: circle(10), restitution: 0.9 });
@@ -186,7 +179,7 @@ describe('resting contacts', () => {
     }
 
     expect(touched).toBe(true);
-    expect(highestAfterBounce).toBeLessThan(150); // it came back up
+    expect(highestAfterBounce).toBeLessThan(150);
   });
 });
 
@@ -230,7 +223,6 @@ describe('contact events', () => {
     world.events.swap();
     expect(world.events.count(CONTACT_BEGIN)).toBe(1);
 
-    // Teleport the ground far away; the contact must be reported as ended.
     world.get(ground, Transform)?.position.set(0, 5000);
     physics.step(world, STEP);
     world.events.swap();
@@ -268,12 +260,9 @@ describe('triggers', () => {
     }
 
     expect(triggered).toBe(true);
-    // Passed straight through rather than being stopped.
     expect(world.get(faller, Transform)?.position.y).toBeGreaterThan(300);
   });
 
-  // Once per overlap, not once per frame. The breakout example lost two lives for one ball
-  // before this was fixed.
   it('emits triggerEnter exactly once for a sustained overlap', () => {
     spawnBody({ x: 0, y: 0, shape: box(200, 200), type: BodyType.STATIC, isTrigger: true });
     spawnBody({ x: 0, y: 0, shape: box(10, 10), gravityScale: 0 });
@@ -307,7 +296,6 @@ describe('triggers', () => {
     world.events.swap();
 
     expect(world.events.count(TRIGGER_EXIT)).toBe(1);
-    // An ending overlap belongs on the trigger channel, not the solid-contact one.
     expect(world.events.count(CONTACT_END)).toBe(0);
   });
 
@@ -351,8 +339,6 @@ describe('triggers', () => {
 });
 
 describe('determinism', () => {
-  // Invariant P2. If the solve order depended on quadtree traversal, replay and the editor's
-  // play/stop snapshot would both be unreliable.
   it('produces identical results from identical inputs', () => {
     /** @returns {number[]} the final positions of a small pile. */
     function simulate() {

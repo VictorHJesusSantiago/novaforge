@@ -52,20 +52,17 @@ describe('insertion and subdivision', () => {
     expect(new Set(found.map((f) => f.entity)).size).toBe(50);
   });
 
-  // Straddling items stay at the parent rather than being duplicated into every child they
-  // overlap, which is what keeps pair generation duplicate-free.
   it('keeps a boundary-straddling item at the parent node', () => {
     const qt = tree({ maxItems: 1 });
     qt.insert(item(1, 100, 100));
     qt.insert(item(2, 600, 600));
-    qt.insert(item(3, 480, 480, 40)); // spans the centre cross
+    qt.insert(item(3, 480, 480, 40));
 
     expect(qt.isLeaf).toBe(false);
     expect(qt.items.map((i) => i.entity)).toContain(3);
     expect(qt.size).toBe(3);
   });
 
-  // Without a depth cap, a hundred bodies at the same point recurse until the stack gives out.
   it('stops subdividing at maxDepth', () => {
     const qt = tree({ maxItems: 1, maxDepth: 3 });
     for (let i = 0; i < 100; i += 1) qt.insert(item(i, 10, 10, 1));
@@ -143,7 +140,6 @@ describe('pair generation', () => {
     expect(qt.pairs()).toHaveLength(0);
   });
 
-  // The property that makes the straddling policy pay off: no de-duplication pass is needed.
   it('produces each pair exactly once', () => {
     const qt = tree({ maxItems: 2 });
     for (let i = 0; i < 40; i += 1) qt.insert(item(i, 400 + (i % 8) * 5, 400 + (i % 8) * 5, 30));
@@ -156,8 +152,6 @@ describe('pair generation', () => {
     }
   });
 
-  // If the tree misses a pair, bodies pass through each other — the failure the broadphase
-  // must never have. Checked against the exhaustive answer.
   it('finds every pair a brute-force check would', () => {
     const qt = tree({ maxItems: 3 });
     const all = [];
@@ -187,9 +181,9 @@ describe('pair generation', () => {
 
   it('pairs a parent-held item against a deeply nested child item', () => {
     const qt = tree({ maxItems: 1 });
-    qt.insert(item(1, 490, 490, 40)); // straddles the centre, stays at the root
+    qt.insert(item(1, 490, 490, 40));
     qt.insert(item(2, 100, 100));
-    qt.insert(item(3, 495, 495, 10)); // deep in a child, overlaps item 1
+    qt.insert(item(3, 495, 495, 10));
 
     const keys = qt.pairs().map(([a, b]) => `${Math.min(a.entity, b.entity)}:${Math.max(a.entity, b.entity)}`);
     expect(keys).toContain('1:3');
