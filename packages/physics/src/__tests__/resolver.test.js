@@ -59,7 +59,6 @@ describe('normal impulse', () => {
     expect(falling.velocity.y).toBeCloseTo(0, 3);
   });
 
-  // Resolving a separating contact would suck the bodies back together.
   it('does nothing when the bodies are already separating', () => {
     const a = body({ velocity: new Vec2(0, -10) });
     const b = body({ velocity: new Vec2(0, 10) });
@@ -108,7 +107,6 @@ describe('restitution', () => {
     expect(bouncy.velocity.y).toBeCloseTo(0, 2);
   });
 
-  // Without the threshold a resting body vibrates forever, and the vibration becomes rotation.
   it('ignores restitution below the velocity threshold', () => {
     const settling = body({ velocity: new Vec2(0, 0.5), restitution: 1 });
     const ground = body({ inverseMass: 0, restitution: 1 });
@@ -130,7 +128,6 @@ describe('friction', () => {
     expect(slider.velocity.x).toBeGreaterThan(0);
   });
 
-  // Coulomb's law. Without the clamp, friction reverses a sliding body instead of slowing it.
   it('never reverses the sliding direction', () => {
     const slider = body({ velocity: new Vec2(1, 100), friction: 2 });
     const ground = body({ inverseMass: 0, friction: 2 });
@@ -151,8 +148,6 @@ describe('friction', () => {
 });
 
 describe('impulse accumulation', () => {
-  // The bug that made stacked boxes acquire spin from nothing: the first contact point of a
-  // two-point manifold received a larger impulse than the second.
   it('gives both points of a symmetric manifold the same impulse', () => {
     const falling = body({ velocity: new Vec2(0, 10), inverseInertia: 0.015 });
     const ground = body({ inverseMass: 0, inverseInertia: 0 });
@@ -189,7 +184,6 @@ describe('impulse accumulation', () => {
     expect(Math.abs(falling.angularVelocity)).toBeLessThan(1e-6);
   });
 
-  // A contact may push but never pull.
   it('never accumulates a negative normal impulse', () => {
     const a = body({ velocity: new Vec2(0, 5) });
     const b = body({ inverseMass: 0 });
@@ -237,8 +231,6 @@ describe('warm starting', () => {
     expect(constraint?.points[0].tangentImpulse).toBe(7);
   });
 
-  // A changed contact count means the manifold's shape changed, so index-matching is no longer
-  // meaningful and last step's edge impulse must not be applied to this step's face contact.
   it('discards the cache when the contact count changes', () => {
     const previous = { normal: [42, 42], tangent: [0, 0] };
     const constraint = prepareContact(
@@ -275,9 +267,6 @@ describe('warm starting', () => {
 });
 
 describe('body type as the mass authority', () => {
-  // Invariant P3 / ADR-0008. A body declared static but left at the default mass used to absorb
-  // half of every impulse into motion the integrator then discarded, so a ball hitting a wall
-  // stopped dead instead of bouncing.
   it('treats a static body as immovable even with a finite inverseMass', () => {
     const ball = body({ velocity: new Vec2(0, 380), restitution: 1, type: 'dynamic' });
     const wall = body({ restitution: 1, type: 'static', inverseMass: 1 });
@@ -329,7 +318,6 @@ describe('body type as the mass authority', () => {
     expect(posA.y).toBeLessThan(0);
   });
 
-  // The legitimate configuration this must not break.
   it('still honours inverseMass 0 on a dynamic body', () => {
     const light = body({ velocity: new Vec2(0, 10), type: 'dynamic' });
     const immovable = body({ type: 'dynamic', inverseMass: 0 });
@@ -354,8 +342,6 @@ describe('positional correction', () => {
     expect(posB.y).toBeGreaterThan(1);
   });
 
-  // Bodies in a resting stack always overlap by a hair; correcting it every step is the
-  // classic jitter.
   it('ignores overlap below the slop', () => {
     const posA = { x: 0, y: 0 };
     const posB = { x: 0, y: 1 };
@@ -388,7 +374,6 @@ describe('positional correction', () => {
 
     applyPositionalCorrection(manifold({ penetration: 10 }), body(), body(), posA, posB);
 
-    // 20% of the depth, split between two equal masses.
     expect(posB.y - posA.y).toBeLessThan(10);
     expect(posB.y - posA.y).toBeGreaterThan(0);
   });

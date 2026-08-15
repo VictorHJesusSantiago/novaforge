@@ -32,7 +32,6 @@ describe('circle vs circle', () => {
     expect(collideCircles({ x: 0, y: 0 }, 10, { x: 20, y: 0 }, 10)).toBeNull();
   });
 
-  // The convention that everything else depends on. Backwards, and bodies attract.
   it('points the normal from A toward B', () => {
     const manifold = collideCircles({ x: 0, y: 0 }, 10, { x: 15, y: 0 }, 10);
     expect(manifold?.normal.x).toBeCloseTo(1);
@@ -55,8 +54,6 @@ describe('circle vs circle', () => {
     expect(manifold?.contacts[0].x).toBeCloseTo(10);
   });
 
-  // Concentric circles have no meaningful normal; dividing by zero would poison the solver
-  // with NaN for the rest of the session.
   it('picks an arbitrary but finite normal for concentric circles', () => {
     const manifold = collideCircles({ x: 5, y: 5 }, 10, { x: 5, y: 5 }, 10);
     expect(manifold).not.toBeNull();
@@ -80,13 +77,10 @@ describe('box vs box', () => {
   });
 
   it('picks the axis of least penetration', () => {
-    // Overlapping 5 horizontally and 18 vertically: the separation should be horizontal.
     const manifold = hit(at(box(20, 20), 0, 0), at(box(20, 20), 15, 2));
     expect(Math.abs(manifold?.normal.x ?? 0)).toBeCloseTo(1, 2);
   });
 
-  // A single contact point leaves a resting box free to rock about it forever; two are what
-  // let a stack settle.
   it('produces two contact points for a flat resting contact', () => {
     const manifold = hit(at(box(40, 20), 0, 0), at(box(40, 20), 0, 19));
     expect(manifold?.contacts.length).toBe(2);
@@ -104,7 +98,6 @@ describe('box vs box', () => {
   });
 
   it('handles a rotated box', () => {
-    // A 45-degree box has a diagonal half-extent of ~14.1, so it reaches further than 10.
     expect(hit(at(box(20, 20), 0, 0, Math.PI / 4), at(box(20, 20), 23, 0))).not.toBeNull();
     expect(hit(at(box(20, 20), 0, 0), at(box(20, 20), 23, 0))).toBeNull();
   });
@@ -134,17 +127,13 @@ describe('circle vs polygon', () => {
     expect(hit(at(circle(10), 100, 0), at(square, 0, 0))).toBeNull();
   });
 
-  // The case a face-only implementation gets wrong, and the reason circles catch on the seam
-  // between two adjacent boxes in most hand-rolled engines.
   it('handles the corner Voronoi region', () => {
-    // Diagonally past the corner at (20, 20): distance to the corner is ~7.07.
     const manifold = hit(at(circle(10), 25, 25), at(square, 0, 0));
     expect(manifold).not.toBeNull();
     expect(manifold?.penetration).toBeCloseTo(10 - Math.hypot(5, 5), 3);
   });
 
   it('rejects a circle just clear of a corner', () => {
-    // The corner is at (20, 20); this centre is ~14.1 away, further than the radius.
     expect(hit(at(circle(10), 30, 30), at(square, 0, 0))).toBeNull();
   });
 
@@ -169,9 +158,6 @@ describe('arbitrary convex polygons', () => {
     { x: -20, y: 20 },
   ]);
 
-  // Winding is normalised on construction so the narrowphase can derive outward normals the
-  // same way every time. The observable consequence: every normal points *away* from the
-  // centroid, whichever order the author listed the vertices in.
   it.each([
     ['counter-clockwise', [{ x: 0, y: -20 }, { x: 20, y: 20 }, { x: -20, y: 20 }]],
     ['clockwise', [{ x: -20, y: 20 }, { x: 20, y: 20 }, { x: 0, y: -20 }]],
@@ -242,8 +228,6 @@ describe('manifold invariants', () => {
     }
   });
 
-  // Two shapes moved apart along the collision normal by the penetration depth must separate.
-  // This is the property the resolver relies on, so it is worth asserting directly.
   it.each(cases)('%s reports a depth that actually separates them', (_name, a, b) => {
     const manifold = hit(a, b);
     expect(manifold).not.toBeNull();

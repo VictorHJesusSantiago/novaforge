@@ -113,8 +113,6 @@ export function animationSystem(world, dt) {
     animator.elapsed += dt * animator.speed;
     const frameDuration = 1 / clip.fps;
 
-    // A while loop, not an if: a very long dt (a stalled tab, an editor step) must not leave
-    // the animation exactly one frame behind for the rest of its life.
     while (animator.elapsed >= frameDuration) {
       animator.elapsed -= frameDuration;
       animator.frameIndex += 1;
