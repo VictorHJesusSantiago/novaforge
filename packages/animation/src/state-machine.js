@@ -126,7 +126,7 @@ export function stateMachineSystem(world) {
     if (machine === null) return;
 
     const state = machine.states.get(controller.current);
-    if (state === undefined) return; // controller.current was hand-edited to an unknown name
+    if (state === undefined) return;
 
     for (const transition of state.transitions) {
       if (!transition.condition(controller.parameters)) continue;
@@ -134,9 +134,7 @@ export function stateMachineSystem(world) {
       const next = /** @type {AnimationState} */ (machine.states.get(transition.to));
       controller.current = next.name;
       play(player, next.timeline, { force: true });
-      return; // one transition per frame — re-evaluating the new state's own transitions
-      // immediately would let a badly authored machine cascade through several states in a
-      // single frame with nothing observable in between.
+      return;
     }
   });
 }

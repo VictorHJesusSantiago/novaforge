@@ -71,10 +71,6 @@ export function playerControlSystem(world) {
 
     if (jump && state.grounded) {
       body.velocity.y = -PLAYER.jumpSpeed;
-      // Cleared immediately rather than waiting for the next `groundCheckSystem` pass: that
-      // pass reads the broadphase tree built by *this* step, which still shows the player
-      // touching the ground they have not yet moved off — without this, a second `jump` press
-      // one frame later would read `grounded: true` again and grant a free double jump.
       state.grounded = false;
     }
   });

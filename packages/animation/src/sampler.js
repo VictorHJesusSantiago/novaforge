@@ -26,7 +26,6 @@ export function sampleTrack(track, time) {
     return { from: last.value, to: last.value, t: 0 };
   }
 
-  // A linear scan is fine: real tracks have a handful to a few dozen keyframes, not thousands.
   let index = 0;
   while (index < keyframes.length - 1 && keyframes[index + 1].time <= time) {
     index += 1;
@@ -72,8 +71,6 @@ export function interpolateValue(component, field, from, to, t) {
   if (fieldType === 'color') {
     return lerpPackedColor(from, to, t);
   }
-  // string, boolean, enum, asset, entity, opaque: nothing to blend between two arbitrary
-  // values, so hold `from` until `to` takes over at the end of the segment.
   return t < 1 ? from : to;
 }
 
