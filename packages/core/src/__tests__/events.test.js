@@ -2,8 +2,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { EventBus } from '../events.js';
 
 describe('buffered events', () => {
-  // The defining property: emitting and reading in the same frame must not deliver, otherwise
-  // whether a system sees an event depends on whether it happens to run after the emitter.
   it('does not deliver within the same frame', () => {
     const bus = new EventBus();
     bus.emit('damage', { amount: 10 });
@@ -44,12 +42,11 @@ describe('buffered events', () => {
     expect(bus.read('b')).toEqual(['y']);
   });
 
-  // Callers iterate the result directly, so an idle channel must not be undefined.
   it('returns an empty array for a channel that never fired', () => {
     const bus = new EventBus();
     expect(bus.read('never')).toEqual([]);
     expect(() => {
-      for (const _ of bus.read('never')) { /* empty */ }
+      for (const _ of bus.read('never')) {  }
     }).not.toThrow();
   });
 
@@ -80,7 +77,6 @@ describe('buffered events', () => {
 });
 
 describe('overflow guard', () => {
-  // A typo'd channel name that nothing reads would otherwise leak for the whole session.
   it('drops the surplus past the cap and warns once', () => {
     const bus = new EventBus();
     bus.maxEventsPerChannel = 10;
@@ -127,7 +123,6 @@ describe('immediate events', () => {
     expect(new EventBus().publish('nobody')).toBe(0);
   });
 
-  // One broken listener must not take down the frame.
   it('isolates a throwing handler from the others', () => {
     const bus = new EventBus();
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});

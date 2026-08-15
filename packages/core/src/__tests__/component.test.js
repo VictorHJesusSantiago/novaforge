@@ -31,8 +31,6 @@ describe('defineComponent', () => {
     expect(type.factory()).not.toBe(type.factory());
   });
 
-  // Duplicate names would make scene serialisation ambiguous; the usual cause is a
-  // copy-pasted definition.
   it('rejects a duplicate name', () => {
     defineComponent('Dup', () => ({}));
     expect(() => defineComponent('Dup', () => ({}))).toThrow(/already defined/);
@@ -59,7 +57,6 @@ describe('defineTag', () => {
     expect(defineTag('Frozen').isTag).toBe(true);
   });
 
-  // Storing `true` rather than `{}` saves an object allocation per tagged entity.
   it('produces a bare true, not an object', () => {
     expect(defineTag('Selected').factory()).toBe(true);
   });
@@ -71,8 +68,6 @@ describe('defineTag', () => {
 });
 
 describe('getComponentType', () => {
-  // The mechanism that lets the editor's scene serialiser turn a saved component name back
-  // into its real type, with no separate registry of its own.
   it('resolves a defined component by name', () => {
     const type = defineComponent('Health', () => ({ hp: 1 }));
     expect(getComponentType('Health')).toBe(type);
@@ -101,9 +96,6 @@ describe('listComponentTypes', () => {
 });
 
 describe('registerComponentType', () => {
-  // The exact scenario this exists for: a component defined before a test's reset must remain
-  // resolvable by name afterward, as the *same* object — not a redefinition, which would create
-  // a second, disconnected type that anything closing over the original no longer agrees with.
   it('restores name resolution for a type after a registry reset', () => {
     const original = defineComponent('Health', () => ({ hp: 1 }));
     resetComponentRegistry();
@@ -120,7 +112,7 @@ describe('registerComponentType', () => {
     const next = defineComponent('Mana', () => ({ mp: 1 }));
 
     expect(getComponentType('Health')?.id).toBe(original.id);
-    expect(next.id).toBe(0); // the counter was reset and is untouched by registering Health
+    expect(next.id).toBe(0);
   });
 });
 

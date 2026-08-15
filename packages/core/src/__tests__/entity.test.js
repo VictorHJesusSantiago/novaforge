@@ -33,8 +33,6 @@ describe('entity packing', () => {
 });
 
 describe('entity handle representation', () => {
-  // Staying inside the signed 32-bit range keeps every bitwise operation well-defined and on
-  // V8's integer fast path.
   it('fits in a positive signed 32-bit integer', () => {
     const e = makeEntity(ENTITY_INDEX_MASK, MAX_GENERATION);
     expect(e).toBeGreaterThan(0);
@@ -42,7 +40,6 @@ describe('entity handle representation', () => {
     expect(Number.isInteger(e)).toBe(true);
   });
 
-  // Generations start at 1 in World, so this is what guarantees no live handle is falsy.
   it('is never zero for a generation of 1 or more', () => {
     for (let index = 0; index < 64; index += 1) {
       expect(makeEntity(index, 1)).not.toBe(NULL_ENTITY);
