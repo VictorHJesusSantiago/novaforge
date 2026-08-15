@@ -31,8 +31,6 @@ describe('projection', () => {
     expect(screen.x).toBeCloseTo(400 + 200);
   });
 
-  // This round trip is what turns a mouse click into a world position; if it drifts, editor
-  // selection lands on the wrong entity.
   it('round-trips through both projections under position, zoom and rotation', () => {
     const cam = camera();
     cam.position.set(123, -456);
@@ -46,8 +44,6 @@ describe('projection', () => {
     }
   });
 
-  // Getting the transform order wrong makes rotation orbit the world origin instead of the
-  // camera — a classic and very visible camera bug.
   it('rotates about the camera, not about the world origin', () => {
     const cam = camera();
     cam.position.set(1000, 1000);
@@ -87,7 +83,6 @@ describe('zoom', () => {
     expect(cam.zoom).toBeCloseTo(3);
   });
 
-  // The behaviour every map and editor viewport is expected to have.
   it('zoomAround keeps the anchored screen point over the same world point', () => {
     const cam = camera();
     cam.position.set(0, 0);
@@ -123,7 +118,6 @@ describe('visible bounds', () => {
     expect(bounds.maxX).toBeCloseTo(1400);
   });
 
-  // Too generous wastes a draw call; too tight makes sprites vanish at the edges.
   it('grows when rotated, never shrinks', () => {
     const cam = camera();
     const unrotated = cam.visibleBounds();
@@ -174,7 +168,6 @@ describe('follow and bounds', () => {
     cam.snapTo({ x: 0, y: 0 });
     expect(cam.position.x).toBe(0);
 
-    // With momentum cancelled, one more follow frame toward a far target must not lurch.
     cam.follow({ x: 0, y: 0 }, 1 / 60);
     expect(cam.position.x).toBeCloseTo(0, 3);
   });

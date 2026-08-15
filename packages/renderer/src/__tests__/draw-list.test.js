@@ -64,8 +64,6 @@ describe('appending commands', () => {
     expect(c.sourceWidth).toBe(8);
   });
 
-  // Reading past the live length silently draws last frame's sprite, which is a genuinely
-  // confusing bug to chase.
   it('throws when reading past the live length', () => {
     const list = new DrawList();
     list.sprite(sprite());
@@ -91,7 +89,6 @@ describe('sorting', () => {
     expect(list.toArray().map((c) => c.texture)).toEqual(['near', 'far']);
   });
 
-  // Layer must beat z, or a background element with a high z would cover the foreground.
   it('lets layer win over z', () => {
     const list = new DrawList();
     list.sprite(sprite({ layer: 0, z: 999, texture: 'background' }));
@@ -100,7 +97,6 @@ describe('sorting', () => {
     expect(list.toArray().map((c) => c.texture)).toEqual(['background', 'foreground']);
   });
 
-  // The property that makes WebGL2 batching possible in Milestone 6.
   it('groups equal (layer, z) commands by texture', () => {
     const list = new DrawList();
     list.sprite(sprite({ texture: 'b' }));
@@ -157,8 +153,6 @@ describe('culling', () => {
     expect(list.length).toBe(0);
   });
 
-  // Erring generous costs one wasted draw call; erring tight makes sprites pop out at the
-  // screen edge, which is far more visible.
   it('keeps a sprite straddling the edge', () => {
     const list = new DrawList();
     list.sprite(sprite({ x: 105, y: 0, width: 40, height: 40 }));
@@ -209,8 +203,6 @@ describe('culling', () => {
 });
 
 describe('pooling', () => {
-  // Thousands of sprites per frame allocating fresh objects would hammer the nursery; the
-  // pool is the reason a steady-state frame allocates nothing here.
   it('reuses command objects across frames', () => {
     const list = new DrawList();
     list.sprite(sprite());

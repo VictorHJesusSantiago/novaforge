@@ -51,8 +51,6 @@ describe('hex parsing', () => {
     expect(fromHexString('  #123456  ')).toBe(0x123456);
   });
 
-  // A bad colour in a data file should be loud on screen, not a crash or a silent black that
-  // looks deliberate.
   it('falls back to magenta for anything unparseable', () => {
     expect(fromHexString('not-a-color')).toBe(MAGENTA);
     expect(fromHexString('')).toBe(MAGENTA);
