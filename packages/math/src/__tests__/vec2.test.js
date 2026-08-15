@@ -74,8 +74,6 @@ describe('Vec2 normalisation', () => {
     expect(new Vec2(10, 0).normalized().length()).toBeCloseTo(1);
   });
 
-  // A zero vector has no direction. Returning NaN here would silently poison every
-  // downstream physics calculation, so it must clamp to zero instead.
   it('returns zero rather than NaN for a zero vector', () => {
     const n = new Vec2(0, 0).normalized();
     expect(n.x).toBe(0);

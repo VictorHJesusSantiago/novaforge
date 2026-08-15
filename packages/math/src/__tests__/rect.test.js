@@ -42,8 +42,6 @@ describe('Rect containment', () => {
     expect(r.containsPoint(new Vec2(15, 5))).toBe(false);
   });
 
-  // Half-open bounds are what let adjacent rects tile a grid without a point landing in two
-  // cells at once — the tilemap depends on it.
   it('includes the top-left edge and excludes the bottom-right', () => {
     expect(r.containsPoint(new Vec2(0, 0))).toBe(true);
     expect(r.containsPoint(new Vec2(10, 10))).toBe(false);

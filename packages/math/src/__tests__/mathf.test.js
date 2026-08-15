@@ -45,8 +45,6 @@ describe('lerp and friends', () => {
     expect(inverseLerp(10, 20, 15)).toBeCloseTo(0.5);
   });
 
-  // A degenerate range has no meaningful answer; 0 is the safe one because it keeps
-  // downstream arithmetic finite.
   it('inverseLerp returns 0 for a degenerate range instead of dividing by zero', () => {
     expect(inverseLerp(5, 5, 7)).toBe(0);
     expect(Number.isFinite(inverseLerp(5, 5, 7))).toBe(true);
@@ -82,7 +80,6 @@ describe('wrap', () => {
     expect(wrap(11, 0, 10)).toBe(1);
   });
 
-  // Plain `%` returns -1 here, which is the classic bug this function exists to avoid.
   it('wraps negative values correctly', () => {
     expect(wrap(-1, 0, 10)).toBe(9);
     expect(wrap(-11, 0, 10)).toBe(9);
@@ -102,7 +99,7 @@ describe('wrap', () => {
     const from = (179 * Math.PI) / 180;
     const to = (-179 * Math.PI) / 180;
     const delta = wrapAngle(to - from);
-    expect(Math.abs(delta)).toBeLessThan(Math.PI / 45); // under 4 degrees
+    expect(Math.abs(delta)).toBeLessThan(Math.PI / 45);
   });
 });
 
@@ -130,7 +127,6 @@ describe('smoothDamp', () => {
     expect(current).toBeCloseTo(100, 1);
   });
 
-  // The whole reason to use a critically damped spring instead of a lerp.
   it('does not overshoot the target', () => {
     const state = { velocity: 0 };
     let current = 0;

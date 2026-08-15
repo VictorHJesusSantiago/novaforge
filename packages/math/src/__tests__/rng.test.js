@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import { Rng } from '../rng.js';
 
 describe('Rng determinism', () => {
-  // This is the property the whole replay and editor-snapshot feature rests on.
   it('produces an identical sequence for an identical seed', () => {
     const a = new Rng(12345);
     const b = new Rng(12345);
@@ -87,7 +86,6 @@ describe('Rng helpers', () => {
     }
   });
 
-  // Returning undefined would let the mistake surface far from its cause.
   it('throws instead of returning undefined for an empty array', () => {
     expect(() => new Rng(1).pick([])).toThrow(RangeError);
   });
