@@ -14,7 +14,6 @@ describe('comboFromEvent', () => {
     expect(comboFromEvent({ key: 'z', ctrlKey: true })).toBe('ctrl+z');
   });
 
-  // Cmd on macOS reports as metaKey, not ctrlKey; treating them the same is what lets one
   // binding table work on every platform.
   it('treats metaKey the same as ctrlKey', () => {
     expect(comboFromEvent({ key: 'z', metaKey: true })).toBe('ctrl+z');

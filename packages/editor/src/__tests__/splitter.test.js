@@ -77,7 +77,7 @@ describe('dragging', () => {
     });
 
     handle.dispatchEvent(pointerEvent('pointerdown', 100));
-    handle.dispatchEvent(pointerEvent('pointermove', 150)); // dragged right, but should shrink
+    handle.dispatchEvent(pointerEvent('pointermove', 150));
 
     expect(splitter.size).toBe(190);
   });

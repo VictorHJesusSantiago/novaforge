@@ -103,7 +103,6 @@ describe('escape', () => {
   });
 });
 
-// The single most important behaviour a keyboard shortcut system has to get right.
 describe('ignored while a form control has focus', () => {
   it('does not undo while typing in a text input', () => {
     const input = document.createElement('input');
