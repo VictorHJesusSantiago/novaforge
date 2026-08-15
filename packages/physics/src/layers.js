@@ -69,8 +69,6 @@ export function layerFromNames(names) {
  */
 export function describeMask(mask) {
   if (mask === 0) return '(none)';
-  // `>>> 0` on both sides: `&` produces a *signed* 32-bit result, so `0xffffffff & 0xffffffff`
-  // is -1, which would never compare equal to the unsigned literal.
   if ((mask >>> 0) === (Layers.ALL >>> 0)) return 'ALL';
 
   const names = [];

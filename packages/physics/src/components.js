@@ -9,7 +9,6 @@ import { box, momentOfInertia } from './shapes.js';
  * @enum {string}
  */
 export const BodyType = {
-  // Cast to literal types so `body.type` stays a union rather than widening to `string`.
   /** Moved by forces and collisions. */
   DYNAMIC: /** @type {'dynamic'} */ ('dynamic'),
   /** Never moves, infinite mass. Ground, walls. */
@@ -85,9 +84,6 @@ export const Collider = defineComponent(
     isTrigger: false,
   }),
   {
-    // 'opaque': a shape's vertex/normal arrays are not something a generic form field can edit
-    // usefully. The inspector renders it read-only; the serialiser still round-trips it exactly,
-    // since a Shape is already plain JSON-safe data (Invariant C2).
     shape: { type: 'opaque', label: 'Shape' },
     layer: { type: 'number', step: 1 },
     mask: { type: 'number', step: 1 },

@@ -153,8 +153,6 @@ export class PhysicsWorld {
         }
       }
 
-      // Damping as an exponential decay rather than a subtraction, so the result does not
-      // depend on the step size and a body can never be pushed backwards by its own drag.
       if (body.linearDamping > 0) {
         const factor = Math.pow(1 - body.linearDamping, dt);
         body.velocity.scaleSelf(factor);
@@ -213,9 +211,6 @@ export class PhysicsWorld {
       if (canCollide(pair[0], pair[1])) filtered.push(pair);
     }
 
-    // Invariant P2: sort by entity id so the solve order never depends on the order the
-    // quadtree happened to visit its children. Two runs with identical input must produce
-    // identical output, which is what makes replay and the editor's play/stop snapshot work.
     filtered.sort((left, right) => {
       const leftKey = Math.min(left[0].entity, left[1].entity);
       const rightKey = Math.min(right[0].entity, right[1].entity);
@@ -272,7 +267,6 @@ export class PhysicsWorld {
       this._currentContacts.add(key);
 
       if (colliderA.isTrigger || colliderB.isTrigger) {
-        // Triggers report and do not resolve — that is the whole point of a trigger.
         triggerCount += 1;
         const payload = {
           trigger: colliderA.isTrigger ? entityA : entityB,
@@ -323,23 +317,16 @@ export class PhysicsWorld {
       });
     }
 
-    // Warm start only after every constraint has been prepared, so that no constraint measures
-    // its restitution against velocities another constraint's warm start already changed.
     for (const contact of contacts) {
       warmStartContact(contact.constraint, contact.bodyA, contact.bodyB);
     }
 
-    // Velocity solve: several passes over the *whole* contact set, not each contact to
-    // completion in turn. In a stack the bottom contact's solution changes what the one above
-    // it needs, so they have to converge together — solving one pair fully at a time lets the
-    // last contact undo the first.
     for (let iteration = 0; iteration < this.iterations; iteration += 1) {
       for (const contact of contacts) {
         solveContact(contact.constraint, contact.bodyA, contact.bodyB);
       }
     }
 
-    // Position solve, once, after velocities have settled.
     for (const contact of contacts) {
       applyPositionalCorrection(
         contact.manifold,
@@ -350,8 +337,6 @@ export class PhysicsWorld {
       );
     }
 
-    // Rebuild the impulse cache from scratch: pairs that stopped touching are dropped rather
-    // than left to seed a future collision with a stale impulse.
     this._impulseCache.clear();
     for (const contact of contacts) {
       this._impulseCache.set(contact.key, captureImpulses(contact.constraint));
@@ -369,8 +354,6 @@ export class PhysicsWorld {
     for (const key of this._previousContacts) {
       if (this._currentContacts.has(key)) continue;
 
-      // Route an ending overlap to the channel matching how it began, so a consumer only ever
-      // has to listen on one.
       const trigger = this._triggerPairs.get(key);
       if (trigger !== undefined) {
         world.events.emit(TRIGGER_EXIT, trigger);
@@ -380,7 +363,6 @@ export class PhysicsWorld {
       }
     }
 
-    // Swap rather than copy: the sets are the same size every step in a steady state.
     const previous = this._previousContacts;
     this._previousContacts = this._currentContacts;
     this._currentContacts = previous;
