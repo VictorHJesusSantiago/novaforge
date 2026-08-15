@@ -36,7 +36,6 @@ export default [
     rules: {
       'no-unused-vars': [
         'error',
-        // `_` and `_name` are the conventional throwaway in this codebase, for both
         // parameters and destructured bindings.
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
       ],

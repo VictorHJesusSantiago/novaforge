@@ -6,8 +6,6 @@ const pkg = (name) =>
   fileURLToPath(new URL(`../../packages/${name}/src/index.js`, import.meta.url));
 
 export default defineConfig({
-  // Relative, not absolute — this build also ships nested under docs-site's `dist/play/editor/`
-  // (see `scripts/build-docs-site.mjs`), where an absolute `/assets/...` base would 404.
   base: './',
   resolve: {
     alias: {
