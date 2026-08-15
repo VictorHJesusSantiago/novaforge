@@ -82,7 +82,6 @@ export class InputManager {
     this._detachers = [];
   }
 
-  // ------------------------------------------------------------ device events
 
   /**
    * @param {string} code a `KeyboardEvent.code`
@@ -171,7 +170,6 @@ export class InputManager {
     this._pendingGamepadButtons = new Set();
   }
 
-  // -------------------------------------------------------------- frame update
 
   /**
    * Promote pending device state into this frame's snapshot and compute the edges.
@@ -199,7 +197,6 @@ export class InputManager {
     this.mouse.wheel = this._pendingWheel;
     this.mouse.inside = this._pendingInside;
 
-    // Wheel is a per-frame accumulator, not a level, so it resets after being read.
     this._pendingWheel = 0;
   }
 
@@ -215,11 +212,10 @@ export class InputManager {
         if (pad.buttons[i].pressed) pressed.push(i);
       }
       this.pushGamepadState(Array.from(pad.axes), pressed);
-      return; // first connected pad only; local multiplayer is a later milestone
+      return;
     }
   }
 
-  // ------------------------------------------------------------------ queries
 
   /**
    * @param {string} code
@@ -305,12 +301,10 @@ export class InputManager {
   gamepadAxis(index) {
     const raw = this._gamepadAxes[index] ?? 0;
     if (Math.abs(raw) < this.gamepadDeadZone) return 0;
-    // Rescale so the axis still reaches 1 at full deflection instead of jumping from 0 to 0.15.
     const sign = raw < 0 ? -1 : 1;
     return sign * ((Math.abs(raw) - this.gamepadDeadZone) / (1 - this.gamepadDeadZone));
   }
 
-  // ------------------------------------------------------------ DOM attachment
 
   /**
    * Attach DOM listeners. Optional — the manager is fully usable without a DOM.
@@ -334,12 +328,10 @@ export class InputManager {
 
     on(windowTarget, 'keydown', (event) => {
       this.pushKeyDown(event.code);
-      // Arrow keys and space scroll the page by default, which is never what a game wants.
       if (PREVENTED_KEYS.has(event.code)) event.preventDefault();
     });
     on(windowTarget, 'keyup', (event) => this.pushKeyUp(event.code));
 
-    // Keys held when focus is lost never report a keyup.
     on(windowTarget, 'blur', () => this.releaseAll());
 
     on(element, 'mousedown', (event) => this.pushMouseDown(event.button));
@@ -353,7 +345,6 @@ export class InputManager {
     });
 
     on(element, 'wheel', (event) => {
-      // deltaY is pixels on a trackpad and ~100 per notch on a wheel; normalise to notches.
       this.pushWheel(Math.sign(event.deltaY));
       event.preventDefault();
     });

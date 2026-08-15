@@ -29,8 +29,6 @@ export function installInputSystems(world, options = {}) {
           input.mouse.worldX = world2d.x;
           input.mouse.worldY = world2d.y;
         } else {
-          // No camera: world space is screen space. The correct degenerate answer, and it
-          // keeps `mouse.worldX` readable rather than undefined.
           input.mouse.worldX = input.mouse.x;
           input.mouse.worldY = input.mouse.y;
         }

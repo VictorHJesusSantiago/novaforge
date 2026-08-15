@@ -100,8 +100,6 @@ export class ActionMap {
     const binding = this._axes.get(name);
     if (binding === undefined) return 0;
 
-    // A gamepad stick, if one is connected and moved, wins over the keyboard — a player
-    // holding a controller is not also resting on WASD.
     if (binding.gamepadAxis !== undefined) {
       const value = this._input.gamepadAxis(binding.gamepadAxis);
       if (Math.abs(value) > 0) return value;
@@ -114,7 +112,6 @@ export class ActionMap {
     for (const key of binding.positive ?? []) {
       if (this._input.isKeyDown(key)) result += 1;
     }
-    // Holding both directions cancels rather than doubling.
     return Math.max(-1, Math.min(1, result));
   }
 
