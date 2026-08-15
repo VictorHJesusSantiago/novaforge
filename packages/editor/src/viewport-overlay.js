@@ -208,7 +208,6 @@ export class ViewportOverlay {
       return;
     }
 
-    // 'scale'
     const newScale = scaleFromDrag(
       this._drag.startPosition,
       world,
@@ -232,13 +231,9 @@ export class ViewportOverlay {
     const transform = this.world.get(entity, Transform);
     if (transform === undefined) return;
 
-    // `setFieldCommand` assigns `newValue` straight onto the field, and vec2 fields must always
-    // hold a real `Vec2` — other systems call `.set()`/`.clone()` on `Transform.position` and
-    // `Transform.scale`. See the equivalent note in the translate case below; it applies to
-    // every branch here for the same reason.
     if (kind === 'translate') {
       const end = new Vec2(transform.position.x, transform.position.y);
-      if (end.x === startPosition.x && end.y === startPosition.y) return; // no-op drag
+      if (end.x === startPosition.x && end.y === startPosition.y) return;
       this.commandStack.execute(
         setFieldCommand(this.world, entity, Transform, 'position', startPosition, end),
       );
@@ -253,7 +248,6 @@ export class ViewportOverlay {
       return;
     }
 
-    // 'scale'
     const endScale = new Vec2(transform.scale.x, transform.scale.y);
     if (endScale.x === startScale.x && endScale.y === startScale.y) return;
     this.commandStack.execute(
@@ -284,8 +278,6 @@ export class ViewportOverlay {
     ctx.strokeStyle = '#4cc9f0';
     ctx.lineWidth = 2;
 
-    // The selection marker: always drawn, in every mode, so it is never ambiguous which entity
-    // is selected even while manipulating a handle that is drawn some distance away from it.
     ctx.beginPath();
     ctx.arc(center.x, center.y, 6, 0, Math.PI * 2);
     ctx.stroke();

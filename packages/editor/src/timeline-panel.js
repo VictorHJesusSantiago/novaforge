@@ -113,8 +113,6 @@ export class TimelinePanel {
     scrubber.step = '0.01';
     scrubber.value = String(player.time);
     scrubber.addEventListener('input', () => {
-      // Scrubbing pauses playback — the standard convention, and the only way manually dragging
-      // to a frame does not immediately get overwritten by the next update tick.
       player.playing = false;
       player.time = Number(scrubber.value);
       label.textContent = `${timeline.name} — ${player.time.toFixed(2)}s / ${timeline.duration.toFixed(2)}s`;
