@@ -58,10 +58,9 @@ export class SceneTree {
 
     const list = document.createElement('ul');
     list.className = 'nf-scene-tree__list';
-    // Dropping on the root list itself (not on any row) reparents to NULL_ENTITY.
     list.addEventListener('dragover', (event) => event.preventDefault());
     list.addEventListener('drop', (event) => {
-      if (event.target !== list) return; // a row's own drop handler already handled it
+      if (event.target !== list) return;
       this._handleDrop(event, NULL_ENTITY);
     });
 
@@ -146,11 +145,11 @@ export class SceneTree {
     if (raw === undefined || raw === '') return;
     const dragged = Number(raw);
 
-    if (dragged === newParent) return; // dropped on itself
-    if (newParent !== NULL_ENTITY && isAncestorOf(this.world, dragged, newParent)) return; // would cycle
+    if (dragged === newParent) return;
+    if (newParent !== NULL_ENTITY && isAncestorOf(this.world, dragged, newParent)) return;
 
     const oldParent = getParent(this.world, dragged);
-    if (oldParent === newParent) return; // no-op drop, do not spam the undo stack
+    if (oldParent === newParent) return;
 
     this.commandStack.execute(setParentCommand(this.world, dragged, oldParent, newParent));
     this.refresh();

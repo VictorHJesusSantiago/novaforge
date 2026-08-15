@@ -23,7 +23,6 @@ import { deleteEntityCommand } from './commands.js';
 export function comboFromEvent(event) {
   const parts = [];
   // metaKey (Cmd on macOS) is treated as the same modifier as ctrlKey, so one binding table
-  // works on every platform rather than needing a macOS-specific copy.
   if (event.ctrlKey || event.metaKey) parts.push('ctrl');
   if (event.shiftKey) parts.push('shift');
   if (event.altKey) parts.push('alt');
@@ -127,9 +126,6 @@ function runAction(editor, action) {
       editor.viewportOverlay.gizmoMode = 'scale';
       return;
     default:
-      // Exhaustiveness: if a new ShortcutAction is ever added to the typedef without a case
-      // here, this line's type stops satisfying `never` and `tsc --noEmit` fails the build —
-      // an intentional trip-wire, not a fallback anyone should hit at runtime.
       /** @type {never} */
       (action);
   }

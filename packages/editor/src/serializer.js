@@ -36,8 +36,6 @@ export const SCENE_FORMAT_VERSION = 1;
  */
 export function snapshotComponent(type, value) {
   if (type.isTag) return true;
-  // No schema: serialise the whole value opaquely. `JSON.parse(JSON.stringify(...))` both
-  // detaches it from the live instance and normalises any `Vec2` fields via their `toJSON`.
   if (type.schema === null) return JSON.parse(JSON.stringify(value));
 
   /** @type {Record<string, any>} */
