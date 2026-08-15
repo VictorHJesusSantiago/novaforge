@@ -67,9 +67,6 @@ export function createPaddle(scene) {
     [
       RigidBody,
       {
-        // Kinematic: driven by the player, never pushed by the ball. A dynamic paddle would be
-        // knocked out of position by every hit. The body type alone makes it immovable to the
-        // solver (Invariant P3) — no mass fiddling required.
         type: BodyType.KINEMATIC,
         restitution: 1,
         friction: 0,
@@ -99,8 +96,6 @@ export function createBall(scene) {
         type: BodyType.DYNAMIC,
         restitution: 1,
         friction: 0,
-        // Arcade physics, not simulation: a breakout ball that slows down, curves, or spins is
-        // a broken breakout ball.
         gravityScale: 0,
         linearDamping: 0,
         angularDamping: 0,

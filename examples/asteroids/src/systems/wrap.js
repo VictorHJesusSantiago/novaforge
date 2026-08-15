@@ -27,8 +27,6 @@ export function wrapSystem(world) {
 
     transform.position.x = wrappedX;
     transform.position.y = wrappedY;
-    // Snap the interpolation anchor too, or the render stage blends a streak clear across the
-    // playfield on the frame of the teleport — the same fix breakout's ball reattach needs.
     transform.previousPosition.copyFrom(transform.position);
   });
 }
