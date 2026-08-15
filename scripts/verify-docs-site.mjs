@@ -21,7 +21,6 @@ async function waitForServer() {
       const response = await fetch(url);
       if (response.ok) return;
     } catch {
-      // not up yet
     }
     await delay(500);
   }
@@ -62,7 +61,7 @@ async function main() {
       if (app !== 'breakout') await page.click(`[data-app="${app}"]`);
       const frame = page.frameLocator('iframe');
       await frame.locator('canvas').first().waitFor({ timeout: 15_000 });
-      await delay(1500); // let a few frames actually run
+      await delay(1500);
       const hasPixels = await hasNonBlankCanvas(page);
       results[app] = hasPixels;
       console.log(`${hasPixels ? 'OK ' : 'FAIL'} Play tab: ${app} iframe canvas has drawn content`);
@@ -99,8 +98,6 @@ async function hasNonBlankCanvas(page) {
       }
       return false;
     }
-    // WebGL: presence of a live context with non-zero drawing-buffer size is a reasonable signal
-    // that something has rendered — reading back pixels needs a preserveDrawingBuffer context.
     return canvas.width > 0 && canvas.height > 0;
   });
 }

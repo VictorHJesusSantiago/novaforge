@@ -27,13 +27,13 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 /** Tokens that must never appear when only `@novaforge/core` is imported. */
 const FORBIDDEN_TOKENS = [
-  'WebGL2Renderer', // @novaforge/renderer
-  'groupByTexture', // @novaforge/renderer (webgl2-batch.js)
-  'Quadtree', // @novaforge/physics
-  'resolveContact', // @novaforge/physics
-  'AudioMixer', // @novaforge/audio
-  'Gamepad', // @novaforge/input
-  'TimelinePlayer', // @novaforge/animation
+  'WebGL2Renderer',
+  'groupByTexture',
+  'Quadtree',
+  'resolveContact',
+  'AudioMixer',
+  'Gamepad',
+  'TimelinePlayer',
 ];
 
 /** @type {Record<string, string>} */
@@ -84,7 +84,7 @@ async function bundleAndCheck(label, aliases) {
     build: {
       outDir: join(tmpDir, 'out'),
       lib: { entry: entryPath, formats: ['es'], fileName: () => 'bundle.js' },
-      minify: false, // unminified so FORBIDDEN_TOKENS (real identifier names) survive if present
+      minify: false,
       write: true,
     },
   });

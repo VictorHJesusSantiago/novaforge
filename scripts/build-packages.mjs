@@ -57,8 +57,6 @@ async function buildPackage(name) {
     },
   });
 
-  // A package with a stylesheet export (only @novaforge/editor today) ships it unbundled and
-  // unminified, copied as-is — CSS has no dead-code-elimination story here worth building one for.
   const stylePath = `${root}src/style.css`;
   if (existsSync(stylePath)) {
     writeFileSync(`${root}dist/style.css`, readFileSync(stylePath));

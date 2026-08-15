@@ -32,7 +32,7 @@ async function main() {
   }
 
   process.stdout.write('building docs-site...\n');
-  await buildApp('docs-site'); // build.emptyOutDir wipes docs-site/dist, so copy /play/ after this
+  await buildApp('docs-site');
 
   const playDir = `${root}docs-site/dist/play`;
   for (const app of available) {
